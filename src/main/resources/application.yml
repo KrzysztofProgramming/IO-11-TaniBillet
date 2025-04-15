@@ -5,17 +5,9 @@ spring:
     name: "Tani Bilet"
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: tani-bilet-server
-            client-secret: CbnmW08jwxwkWO8D5msCXIDxTUCjGStN
-            scope: openid, profile, email
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/auth/realms/tani-bilet
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/tani-bilet
   datasource:
     url: jdbc:postgresql://localhost:5432/app_db
     username: app_user
