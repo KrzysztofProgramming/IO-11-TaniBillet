@@ -1,4 +1,4 @@
-package io.tanibilet.server.tickets;
+package io.tanibilet.server.events;
 
 import io.tanibilet.server.tickets.entities.EventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

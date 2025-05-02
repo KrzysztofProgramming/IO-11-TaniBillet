@@ -26,4 +26,7 @@ public class EventEntity {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime eventEndTimeMillis;
     private String location;
+    private Double ticketPrice;
+    private Integer maxTicketCount;
+    private String ownerUserId;
 }
