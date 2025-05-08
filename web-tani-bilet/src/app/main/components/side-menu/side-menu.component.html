@@ -1,0 +1,49 @@
+<mat-accordion class="main-menu" ngClass="nav" [attr.aria-label]="'commons.NAVIGATION.ariaLabelMainNav'">
+
+  @for (menuItem of sideMenuRouterLinks; track $index; let i = $index;) {
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <a class="side-menu-item" privilegesCheck routerLinkActive="active-list-item" tabindex="0"
+          [routerLink]="!menuItem.hasSubItems ? menuItem.link : null">
+          <div class="side-menu-item__overlay">
+          </div>
+          <img class="side-menu-icon" aria-hidden="true" [src]="'../../../../assets/icons/' + menuItem.icon + '.svg'"
+            [alt]="menuItem.title" />
+          <div class="side-menu-item__title">{{ menuItem.title }}</div>
+        </a>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    @if (sideMenuPopupOptions[menuItem.link]) {
+      @for (option of sideMenuPopupOptions[menuItem.link].items; track option.title + $index) {
+
+        <a mat-menu-item class="side-menu-item__list-item" tabindex="0" [routerLink]="option.link">
+          {{ option.title }}
+        </a>
+
+      }
+    }
+  </mat-expansion-panel>
+  <mat-menu #menu class="dropdown" [yPosition]="'below'" [xPosition]="'after'" [overlapTrigger]="true"
+    [hasBackdrop]="false">
+    <div>
+      @if (sideMenuPopupOptions[menuItem.link]) {
+        @if (menuItem.title) {
+          <div class="dropdown__title">{{ menuItem.title }}</div>
+        }
+        @for (option of sideMenuPopupOptions[menuItem.link].items; track option.title + $index) {
+          @if (option.subtitle) {
+            <div class="dropdown__subtitle">
+              {{ option.title }}
+            </div>
+          } @else {
+            <a mat-menu-item class="dropdown__item" tabindex="0" [routerLink]="option.link">
+              {{ option.title }}
+            </a>
+          }
+        }
+      }
+    </div>
+  </mat-menu>
+  }
+</mat-accordion>
