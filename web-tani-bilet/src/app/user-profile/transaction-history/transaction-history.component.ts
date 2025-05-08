@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'; // Moduł dla mat-table
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator'; // Moduł dla paginacji (opcjonalne)
-import { MatSort, MatSortModule } from '@angular/material/sort'; // Moduł dla sortowania (opcjonalne)
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-transaction-history',
@@ -46,7 +46,7 @@ export class TransactionHistoryComponent {
     },
   ];
 
-  displayedColumns: string[] = ['id', 'date', 'amount', 'description', 'place']; // Dodajemy 'place' do kolumn
+  displayedColumns: string[] = ['id', 'date', 'amount', 'description', 'place'];
   dataSource = new MatTableDataSource(this.transactions);
 
   ngAfterViewInit() {
