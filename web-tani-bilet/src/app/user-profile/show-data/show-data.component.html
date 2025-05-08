@@ -1,0 +1,15 @@
+<div class="user-data">
+  <h2>Dane użytkownika</h2>
+  <p><strong>Imię:</strong> {{ user.firstName }}</p>
+  <p><strong>Nazwisko:</strong> {{ user.lastName }}</p>
+  <p><strong>Nr telefonu:</strong> {{ user.phoneNumber }}</p>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>Wiek:</strong> {{ age }} lat</p>
+  <p>
+    <strong>Data urodzenia:</strong> {{ user.birthDate | date : "dd.MM.yyyy" }}
+  </p>
+  <p><strong>Ulubione kategorie wydarzeń:</strong></p>
+  <ul>
+    <li *ngFor="let category of user.favoriteCategories">{{ category }}</li>
+  </ul>
+</div>
