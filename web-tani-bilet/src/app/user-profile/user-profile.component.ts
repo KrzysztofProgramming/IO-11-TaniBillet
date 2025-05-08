@@ -8,6 +8,7 @@ import { SupportComponent } from './support/support.component';
 import { TicketsComponent } from './tickets/tickets.component';
 import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -21,7 +22,7 @@ import { CommonModule } from '@angular/common';
     ChangeDataComponent,
     SupportComponent,
     TicketsComponent,
-    TransactionHistoryComponent,
+    TransactionHistoryComponent
   ],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss',

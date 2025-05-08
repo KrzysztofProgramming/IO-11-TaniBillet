@@ -1,0 +1,48 @@
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+  }
+  
+  .search-bar {
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+    margin: 30px 0 10px 20px;
+    font-weight: 600;
+  }
+  
+  .popular-slider {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    padding: 0 20px;
+  }
+  
+  .card-track {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .event-card {
+    min-width: 220px;
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+  
+  .event-card img {
+    height: 140px;
+    object-fit: cover;
+  }
+  
+  .card-content{
+    padding: 10px;
+    
+  }

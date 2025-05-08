@@ -1,0 +1,28 @@
+<h2>Witaj w tani-bilet!</h2>
+
+<div class="search-wrapper">
+    <mat-form-field appearance="outline" class="search-bar">
+      <mat-label>Szukaj wydarzenia</mat-label>
+      <input matInput [(ngModel)]="searchQuery" placeholder="np. sanah, Męskie Granie">
+      <button mat-icon-button matSuffix aria-label="Szukaj" (click)="onSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+</div>
+  
+
+<h4 class="section-title">Najpopularniejsze wydarzenia</h4>
+
+<div class="popular-slider">
+  <div class="card-track">
+    @for (event of popularEvents; track $index) {
+      <mat-card class="event-card">
+        <img mat-card-image [src]="event.image" [alt]="event.title" />
+        <div class="card-content">
+            <mat-card-title>{{ event.title }}</mat-card-title>
+            <mat-card-subtitle>{{ event.date }}</mat-card-subtitle>
+        </div>
+      </mat-card>
+    }
+  </div>
+</div>
