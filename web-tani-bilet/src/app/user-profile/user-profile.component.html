@@ -1,0 +1,27 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened>
+    <mat-nav-list>
+      <mat-list-item (click)="showData()">Wyświetl dane</mat-list-item>
+      <mat-list-item (click)="editData()">Zmień dane</mat-list-item>
+      <mat-list-item (click)="viewTransactionHistory()"
+        >Historia transakcji</mat-list-item
+      >
+      <mat-list-item (click)="viewActiveTickets()"
+        >Aktywne bilety</mat-list-item
+      >
+      <mat-list-item (click)="deleteAccount()">Usuń konto</mat-list-item>
+      <mat-list-item (click)="requestRefund()">Poproś o zwrot</mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="content">
+      <app-show-data *ngIf="activeComponent === 'showData'"></app-show-data>
+      <app-change-data *ngIf="activeComponent === 'editData'"></app-change-data>
+      <app-transaction-history
+        *ngIf="activeComponent === 'transactionHistory'"
+      ></app-transaction-history>
+      <app-tickets *ngIf="activeComponent === 'activeTickets'"></app-tickets>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

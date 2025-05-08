@@ -1,0 +1,76 @@
+<div class="user-data-form">
+  <h2>Edytuj dane użytkownika</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <label for="firstName">Imię:</label>
+    <input id="firstName" formControlName="firstName" type="text" />
+    <div
+      *ngIf="
+        userForm.controls['firstName'].invalid &&
+        userForm.controls['firstName'].touched
+      "
+    >
+      Imię jest wymagane (minimum 3 znaki).
+    </div>
+
+    <label for="lastName">Nazwisko:</label>
+    <input id="lastName" formControlName="lastName" type="text" />
+    <div
+      *ngIf="
+        userForm.controls['lastName'].invalid &&
+        userForm.controls['lastName'].touched
+      "
+    >
+      Nazwisko jest wymagane (minimum 3 znaki).
+    </div>
+
+    <label for="phoneNumber">Nr telefonu:</label>
+    <input id="phoneNumber" formControlName="phoneNumber" type="text" />
+    <div
+      *ngIf="
+        userForm.controls['phoneNumber'].invalid &&
+        userForm.controls['phoneNumber'].touched
+      "
+    >
+      Numer telefonu jest wymagany i musi być w poprawnym formacie.
+    </div>
+
+    <label for="email">Email:</label>
+    <input id="email" formControlName="email" type="email" />
+    <div
+      *ngIf="
+        userForm.controls['email'].invalid && userForm.controls['email'].touched
+      "
+    >
+      Email jest wymagany i musi być w poprawnym formacie.
+    </div>
+
+    <label for="birthDate">Data urodzenia:</label>
+    <input id="birthDate" formControlName="birthDate" type="date" />
+    <div
+      *ngIf="
+        userForm.controls['birthDate'].invalid &&
+        userForm.controls['birthDate'].touched
+      "
+    >
+      Data urodzenia jest wymagana.
+    </div>
+
+    <label for="favoriteCategories">Ulubione kategorie wydarzeń:</label>
+    <input
+      id="favoriteCategories"
+      formControlName="favoriteCategories"
+      type="text"
+    />
+    <div
+      *ngIf="
+        userForm.controls['favoriteCategories'].invalid &&
+        userForm.controls['favoriteCategories'].touched
+      "
+    >
+      Ulubione kategorie są wymagane.
+    </div>
+
+    <button type="submit" [disabled]="userForm.invalid">Zapisz</button>
+  </form>
+</div>
