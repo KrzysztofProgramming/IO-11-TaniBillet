@@ -4,7 +4,7 @@
 ```shell
 cd ./tools & docker compose up
 ```
-2. Run server application from intellij: `io.tanibilet.server.MainServerApplication`
+2. Run server application from intellij: `io.tanibilet.server.MainServerApplication`, remember to setup env variable $SMTP_PASSWORD
 4. To use API you need JWT token from keycloak, you can get it using OAuth2 flow:
 ```
 Grant Type: Authorization Code
