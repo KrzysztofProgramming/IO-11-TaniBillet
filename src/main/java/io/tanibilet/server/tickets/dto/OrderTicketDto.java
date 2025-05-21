@@ -1,6 +1,6 @@
 package io.tanibilet.server.tickets.dto;
 
 public record OrderTicketDto(
-        String seat,
+        Integer seat,
         Long eventId
 ){}
