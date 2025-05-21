@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     Optional<TicketEntity> findOneByIdAndUserId(Long id, String userId);
+    boolean existsByEventIdAndSeat(Long eventId, Integer seat);
     Page<TicketEntity> findByUserId(String userId, Pageable pageable);
     long countByEventId(Long eventId);
 }

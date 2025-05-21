@@ -44,6 +44,11 @@ public class TicketService {
             long ticketCount = ticketRepository.countByEventId(event.getId());
             if (ticketCount >= maxTicketCount) return Optional.empty();
 
+            if(ticketRepository.existsByEventIdAndSeat(event.getId(), orderTicketDto.seat())){
+                // seat is already occupied
+                return Optional.empty();
+            }
+
             val createdTicket = ticketRepository.save(createTicketEntity(orderTicketDto, event, userOpt.map(UserPrincipal::userId)));
             userOpt.ifPresent(user -> mailService.sendTicketViaEmail(createdTicket, user));
 

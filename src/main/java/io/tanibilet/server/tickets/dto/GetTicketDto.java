@@ -9,7 +9,7 @@ public record GetTicketDto(
         Long id,
         UUID qrCodeId,
         Double boughtPrice,
-        String seat,
+        Integer seat,
         Long eventId,
         Optional<String> userId
 ) {
