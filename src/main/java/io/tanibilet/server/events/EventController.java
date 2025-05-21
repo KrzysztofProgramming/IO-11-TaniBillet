@@ -30,13 +30,11 @@ public class EventController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @PermitAll
     @GetMapping
     public Page<EventDto> getEvents(PageableDto pageable) {
         return eventService.getAllEvents(pageable.toPageable()).map(EventDto::fromEventEntity);
     }
 
-    @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id)
