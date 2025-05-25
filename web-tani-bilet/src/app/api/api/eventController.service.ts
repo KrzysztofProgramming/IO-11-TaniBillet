@@ -20,10 +20,8 @@ import { CreateEventDto } from '@api/model/createEventDto';
 import { EventDto } from '@api/model/eventDto';
 import { PageEventDto } from '@api/model/pageEventDto';
 import { PageableDto } from '@api/model/pageableDto';
-
-import { BASE_PATH } from '../../../../../../../../../../../gen/src/variables';
-import { Configuration } from '../../../../../../../../../../../gen/src/configuration';
-import { CustomHttpUrlEncodingCodec } from '../../../../../../../../../../../gen/src/encoder';
+import { Configuration } from '@api/configuration';
+import { BASE_PATH } from '@api/variables';
 
 
 @Injectable()
@@ -222,14 +220,15 @@ export class EventControllerService {
     public getEvents(pageable: PageableDto, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<PageEventDto>>;
     public getEvents(pageable: PageableDto, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<PageEventDto>>;
     public getEvents(pageable: PageableDto, observe: any = 'body', reportProgress: boolean = false ): Observable<any> {
-
         if (pageable === null || pageable === undefined) {
             throw new Error('Required parameter pageable was null or undefined when calling getEvents.');
         }
 
         let queryParameters = new HttpParams();
         if (pageable !== undefined && pageable !== null) {
-            queryParameters = queryParameters.set('pageable', <any>pageable);
+            queryParameters = queryParameters
+  .set('pageNumber', pageable.pageNumber.toString())
+  .set('pageSize', pageable.pageSize.toString());
         }
 
         let headers = this.defaultHeaders;
@@ -253,7 +252,7 @@ export class EventControllerService {
 
         // to determine the Content-Type header
         const consumes: string[] = [
-        ];
+        ];console.log(queryParameters)
 
         return this.httpClient.request<PageEventDto>('get',`${this.basePath}/api/events`,
             {

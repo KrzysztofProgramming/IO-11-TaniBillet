@@ -20,11 +20,8 @@ import { GetTicketDto } from '@api/model/getTicketDto';
 import { OrderTicketDto } from '@api/model/orderTicketDto';
 import { PageGetTicketDto } from '@api/model/pageGetTicketDto';
 import { PageableDto } from '@api/model/pageableDto';
-import { Configuration } from '../../../../../../../../../../../gen/src/configuration';
-import { CustomHttpUrlEncodingCodec } from '../../../../../../../../../../../gen/src/encoder';
-import { BASE_PATH } from '../../../../../../../../../../../gen/src/variables';
-
-
+import { Configuration } from '@api/configuration';
+import { BASE_PATH } from '@api/variables';
 
 @Injectable()
 export class TicketControllerService {

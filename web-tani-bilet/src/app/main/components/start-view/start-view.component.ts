@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { EventsListComponent } from '../../../events/events-list/events-list.component';
 
 
 @Component({
@@ -16,7 +17,8 @@ import { MatCardModule } from '@angular/material/card';
     FormsModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    EventsListComponent
   ],
   templateUrl: './start-view.component.html',
   styleUrl: './start-view.component.scss'

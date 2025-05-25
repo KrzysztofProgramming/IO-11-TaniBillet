@@ -13,13 +13,9 @@
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent }                           from '@angular/common/http';
-import { CustomHttpUrlEncodingCodec }                        from '../../../../../../../../../../../gen/src/encoder';
-
-import { Observable }                                        from 'rxjs';
-
-
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../../../../../../../../../../../gen/src/variables';
-import { Configuration }                                     from '../../../../../../../../../../../gen/src/configuration';
+import { Configuration } from '@api/configuration';
+import { BASE_PATH } from '@api/variables';
+import { Observable } from 'rxjs';
 
 
 @Injectable()
