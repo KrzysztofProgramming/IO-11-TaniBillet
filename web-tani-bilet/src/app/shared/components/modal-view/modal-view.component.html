@@ -1,0 +1,20 @@
+<div class="modal">
+    <div *ngIf="title" class="modal__header">
+        <h3 class="modal__header-title">{{ title }}</h3>
+    </div>
+    <div class="modal__content">
+        <ng-content></ng-content>
+    </div>
+  <div class="modal__buttons">
+    <ng-container *ngFor="let btn of actionButtons">
+        <button
+            mat-button 
+            [color]="btn.primary ? 'primary' : 'accent'" 
+            [ngClass]="btn.class"
+            (click)="btn.actionFn()"
+            [disabled]="isDisabled(btn)"
+            >{{ btn.title }}
+        </button>
+    </ng-container>
+  </div>
+</div>

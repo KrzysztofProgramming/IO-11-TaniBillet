@@ -9,13 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SortObject } from './sortObject';
+import { EventDto } from './eventDto';
+import { PageMetadata } from './pageMetadata';
 
-export interface PageableObject { 
-    offset?: number;
-    sort?: Array<SortObject>;
-    paged?: boolean;
-    pageSize?: number;
-    pageNumber?: number;
-    unpaged?: boolean;
+export interface PagedModelEventDto { 
+    content?: Array<EventDto>;
+    page?: PageMetadata;
 }

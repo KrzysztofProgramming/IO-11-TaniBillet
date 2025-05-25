@@ -10,19 +10,9 @@
  * Do not edit the class manually.
  */
 import { GetTicketDto } from './getTicketDto';
-import { PageableObject } from './pageableObject';
-import { SortObject } from './sortObject';
+import { PageMetadata } from './pageMetadata';
 
-export interface PageGetTicketDto { 
-    totalElements?: number;
-    totalPages?: number;
-    size?: number;
+export interface PagedModelGetTicketDto { 
     content?: Array<GetTicketDto>;
-    number?: number;
-    sort?: Array<SortObject>;
-    first?: boolean;
-    last?: boolean;
-    numberOfElements?: number;
-    pageable?: PageableObject;
-    empty?: boolean;
+    page?: PageMetadata;
 }

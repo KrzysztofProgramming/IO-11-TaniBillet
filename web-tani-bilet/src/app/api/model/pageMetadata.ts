@@ -10,10 +10,9 @@
  * Do not edit the class manually.
  */
 
-export interface SortObject { 
-    direction?: string;
-    nullHandling?: string;
-    ascending?: boolean;
-    property?: string;
-    ignoreCase?: boolean;
+export interface PageMetadata { 
+    size?: number;
+    number?: number;
+    totalElements?: number;
+    totalPages?: number;
 }

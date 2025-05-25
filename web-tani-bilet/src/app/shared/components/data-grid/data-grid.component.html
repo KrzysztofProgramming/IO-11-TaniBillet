@@ -41,7 +41,7 @@
   <div class="row-button-actions" *ngIf="data.length">
     <ng-container *ngFor="let action of rowButtonAction">
       <div [ngClass]="action.color">
-        <button mat-button color="primary" (click)="action.callback(selectedRow)"
+        <button mat-button color="primary" (click)="action?.callback(selectedRow)"
           [disabled]="!rowButtonActionAvailability(action)">
           {{action.name}}
         </button>

@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { LoadingComponent } from '../loading/loading.component';
 import { LoadingService } from '../../services/loading/loading.service';
 
@@ -13,6 +13,7 @@ export interface TableAction<T> {
   icon?: string;
   color?: string;
   callback: (el?: T) => void;
+  availabilityFn: (el?: T) => boolean;
 }
 
 export enum TABLE_ACTION_KEY {
@@ -61,16 +62,18 @@ export class DataGridComponent<T> implements OnInit{
 
   ngOnInit(): void {
     this.columnsToDisplay = !this.rowButtonAction.length ? this.displayedColumns : ['select', ...this.displayedColumns];
-    // this.data$.subscribe(el => this.data = el!)
-    // this.dataModel$ = this.data$.pipe(this._loadingService.showLoaderUntilCompleted());
+
   }
 
   rowClicked(item: T){
     this.selectedRow = item;
   }
 
-  rowButtonActionAvailability(rowButtonActions: TableAction<T> | undefined): boolean {
-    return false;
+  rowButtonActionAvailability(action: TableAction<T> | undefined): boolean {
+    if (action?.availabilityFn) {
+        return action.availabilityFn(this.selectedRow);
+      }
+      return false;
   }
 
 }

@@ -17,4 +17,6 @@ export interface CreateEventDto {
     location: string;
     ticketPrice: number;
     maxTicketCount: number;
+    description: string;
+    isBuyingTicketsTurnedOff: boolean;
 }
