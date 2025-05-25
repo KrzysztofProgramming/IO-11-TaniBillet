@@ -1,7 +1,11 @@
 server:
   port: 8082
+springdoc:
+  api-docs:
+    version: OPENAPI_3_0
 spring:
   application:
+
     name: "Tani Bilet"
   security:
     oauth2:
