@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SideMenuComponent } from "../side-menu/side-menu.component";
 import { Router, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { KeycloakService } from '../../../shared/services/security/keycloak.service';
 
 @Component({
   selector: 'app-main',
@@ -25,10 +26,15 @@ import { MatIconModule } from '@angular/material/icon';
 export class MainComponent {
 
   constructor(
-    private _router: Router
+    private _router: Router,
+    // private _keycloakService: KeycloakService
   ){
 
   }
+
+  // login() {
+  //   this._keycloakService.login();
+  // }
 
   goToUserProfile(){
     this._router.navigate(['user-profile']);
