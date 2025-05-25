@@ -20,8 +20,7 @@ public record CreateEventDto(
     @NotNull
     @Min(1)
     Integer maxTicketCount,
-    @NotNull
-    @Max(2000)
+    @NotBlank
     String description,
     @NotNull
     Boolean isBuyingTicketsTurnedOff
