@@ -16,6 +16,7 @@ public record CreateEventDto(
     @NotBlank
     String location,
     @NotNull
+    @PositiveOrZero
     Double ticketPrice,
     @NotNull
     @Min(1)
