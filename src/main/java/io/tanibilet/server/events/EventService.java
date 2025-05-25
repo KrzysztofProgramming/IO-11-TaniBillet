@@ -81,6 +81,7 @@ public class EventService {
                 userId,
                 dto.description(),
                 dto.isBuyingTicketsTurnedOff(),
+                dto.eventType(),
                 new HashSet<>()
         );
     }

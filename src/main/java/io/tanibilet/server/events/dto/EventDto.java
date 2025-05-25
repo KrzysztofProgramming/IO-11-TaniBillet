@@ -1,6 +1,7 @@
 package io.tanibilet.server.events.dto;
 
 import io.tanibilet.server.events.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -32,7 +33,9 @@ public record EventDto(
     Integer maxTicketsCount,
     @NotNull
     @PositiveOrZero
-    Integer ticketsSoldCount
+    Integer ticketsSoldCount,
+    @NotNull
+    EventType eventType
 ){
     public static EventDto fromEventEntity(final EventEntity entity) {
         return new EventDto(
@@ -45,7 +48,8 @@ public record EventDto(
                 entity.getIsBuyingTicketsTurnedOff(),
                 entity.getOwnerUserId(),
                 entity.getMaxTicketCount(),
-                entity.getSoldTicketCount()
+                entity.getSoldTicketCount(),
+                entity.getEventType()
         );
     }
 }

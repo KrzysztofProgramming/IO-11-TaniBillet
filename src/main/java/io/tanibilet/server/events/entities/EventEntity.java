@@ -34,6 +34,8 @@ public class EventEntity {
     private String ownerUserId;
     private String description;
     private Boolean isBuyingTicketsTurnedOff;
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<TicketEntity> tickets = new HashSet<>();
@@ -45,6 +47,7 @@ public class EventEntity {
         this.setLocation(updateDto.location());
         this.setDescription(updateDto.description());
         this.setIsBuyingTicketsTurnedOff(updateDto.isBuyingTicketsTurnedOff());
+        this.setEventType(updateDto.eventType());
     }
 
     public int getSoldTicketCount() {
