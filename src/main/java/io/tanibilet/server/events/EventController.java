@@ -20,7 +20,7 @@ public class EventController {
     private final EventService eventService;
 
     @PreAuthorize("hasRole('event_creator')")
-    @PostMapping
+    @PostMapping("/crud")
     public ResponseEntity<EventDto> createEvent(@AuthenticationPrincipal UserPrincipal user, @RequestBody @Valid CreateEventDto createEventDto) {
         return eventService.createEvent(createEventDto, user)
                 .map(EventDto::fromEventEntity)
@@ -28,12 +28,17 @@ public class EventController {
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping
-    public Page<EventDto> getEvents(PageableDto pageable) {
+    @GetMapping("/crud")
+    public Page<EventDto> getEvents(@Valid PageableDto pageable) {
         return eventService.getAllEvents(pageable.toPageable()).map(EventDto::fromEventEntity);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/createdByUserOnly")
+    public Page<EventDto> getEventForUser(@Valid PageableDto pageable, @AuthenticationPrincipal UserPrincipal user) {
+        return eventService.getAllEventsForUser(user.userId(), pageable.toPageable()).map(EventDto::fromEventEntity);
+    }
+
+    @GetMapping("/crud/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id)
                 .map(EventDto::fromEventEntity)
@@ -42,7 +47,7 @@ public class EventController {
     }
 
     @PreAuthorize("hasRole('event_creator')")
-    @PutMapping("/{id}")
+    @PutMapping("/crud/{id}")
     public ResponseEntity<EventDto> updateEvent(
             @AuthenticationPrincipal UserPrincipal user,
             @PathVariable Long id,
@@ -54,7 +59,7 @@ public class EventController {
     }
 
     @PreAuthorize("hasRole('event_creator')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/crud/{id}")
     public ResponseEntity<?> deleteEvent(@AuthenticationPrincipal UserPrincipal user, @PathVariable Long id) {
         return eventService.deleteEvent(id, user) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }

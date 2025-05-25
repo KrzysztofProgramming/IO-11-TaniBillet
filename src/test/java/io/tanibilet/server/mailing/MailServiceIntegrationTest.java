@@ -1,6 +1,6 @@
 package io.tanibilet.server.mailing;
 
-import io.tanibilet.server.events.entities.TicketEntity;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

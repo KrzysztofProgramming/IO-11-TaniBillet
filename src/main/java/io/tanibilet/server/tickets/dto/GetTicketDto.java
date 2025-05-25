@@ -1,6 +1,6 @@
 package io.tanibilet.server.tickets.dto;
 
-import io.tanibilet.server.events.entities.TicketEntity;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 
 import java.util.Optional;
 import java.util.UUID;

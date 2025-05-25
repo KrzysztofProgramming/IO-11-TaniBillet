@@ -4,8 +4,9 @@ import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.EventRepository;
 import io.tanibilet.server.mailing.MailService;
 import io.tanibilet.server.tickets.dto.OrderTicketDto;
-import io.tanibilet.server.tickets.entities.EventEntity;
-import io.tanibilet.server.events.entities.TicketEntity;
+import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
+import io.tanibilet.server.events.entities.EventEntity;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 @Transactional
@@ -37,7 +39,23 @@ public class TicketService {
         return ticketRepository.findOneByIdAndUserId(ticketId, userId);
     }
 
-    public Optional<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, Optional<UserPrincipal> userOpt) {
+    public Optional<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, UserPrincipal user) {
+        return orderTicketForEvent(
+                orderTicketDto,
+                ticketEntity -> mailService.sendTicketViaEmail(ticketEntity, user),
+                Optional.empty()
+        );
+    }
+
+    public Optional<TicketEntity> orderTicketForEvent(OrderTicketUnauthenticatedDto orderTicketDto) {
+        return orderTicketForEvent(
+                orderTicketDto.toOrderTicketDto(),
+                ticketEntity -> mailService.sendTicketViaEmail(ticketEntity, orderTicketDto.email()),
+                Optional.empty()
+        );
+    }
+
+    private Optional<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, Consumer<TicketEntity> mailSendingConsumer, Optional<String> userId) {
         val eventOpt = eventRepository.findById(orderTicketDto.eventId());
         return eventOpt.flatMap(event -> {
             long maxTicketCount = event.getMaxTicketCount();
@@ -49,9 +67,8 @@ public class TicketService {
                 return Optional.empty();
             }
 
-            val createdTicket = ticketRepository.save(createTicketEntity(orderTicketDto, event, userOpt.map(UserPrincipal::userId)));
-            userOpt.ifPresent(user -> mailService.sendTicketViaEmail(createdTicket, user));
-
+            val createdTicket = ticketRepository.save(createTicketEntity(orderTicketDto, event, userId));
+            mailSendingConsumer.accept(createdTicket);
             return Optional.of(createdTicket);
         });
     }

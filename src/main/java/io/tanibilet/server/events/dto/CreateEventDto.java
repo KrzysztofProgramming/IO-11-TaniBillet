@@ -19,5 +19,10 @@ public record CreateEventDto(
     Double ticketPrice,
     @NotNull
     @Min(1)
-    Integer maxTicketCount
+    Integer maxTicketCount,
+    @NotNull
+    @Max(2000)
+    String description,
+    @NotNull
+    Boolean isBuyingTicketsTurnedOff
 ){}

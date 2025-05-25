@@ -1,12 +1,10 @@
 package io.tanibilet.server.mailing;
 
 import io.tanibilet.server.auth.UserPrincipal;
-import io.tanibilet.server.events.entities.TicketEntity;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import jakarta.mail.internet.MimeMessage;
 

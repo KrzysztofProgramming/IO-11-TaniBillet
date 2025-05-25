@@ -1,6 +1,6 @@
-package io.tanibilet.server.events.entities;
+package io.tanibilet.server.tickets.entities;
 
-import io.tanibilet.server.tickets.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventEntity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;

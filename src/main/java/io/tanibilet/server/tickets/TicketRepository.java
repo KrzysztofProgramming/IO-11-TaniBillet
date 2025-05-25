@@ -1,6 +1,6 @@
 package io.tanibilet.server.tickets;
 
-import io.tanibilet.server.events.entities.TicketEntity;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
