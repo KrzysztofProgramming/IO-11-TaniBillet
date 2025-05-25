@@ -1,17 +1,18 @@
 package io.tanibilet.server.tickets.dto;
 
 import io.tanibilet.server.tickets.entities.TicketEntity;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public record GetTicketDto(
-        Long id,
-        UUID qrCodeId,
-        Double boughtPrice,
-        Integer seat,
-        Long eventId,
-        Optional<String> userId
+        @NotNull Long id,
+        @NotNull UUID qrCodeId,
+        @NotNull Double boughtPrice,
+        @NotNull Integer seat,
+        @NotNull Long eventId,
+        @NotNull Optional<String> userId
 ) {
     public static GetTicketDto fromTicketEntity(final TicketEntity ticket) {
         return new GetTicketDto(
