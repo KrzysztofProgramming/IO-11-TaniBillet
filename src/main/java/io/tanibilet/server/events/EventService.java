@@ -2,7 +2,6 @@ package io.tanibilet.server.events;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
-import io.tanibilet.server.events.dto.EventDto;
 import io.tanibilet.server.events.entities.EventEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
