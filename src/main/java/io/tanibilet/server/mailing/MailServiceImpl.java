@@ -39,7 +39,8 @@ public class MailServiceImpl implements MailService {
 
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("Nie udało się wysłać e-maila", e);
+            e.printStackTrace();
+//            throw new RuntimeException("Nie udało się wysłać e-maila", e);
         }
     }
 
