@@ -146,5 +146,76 @@ class EventControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, event.getStatusCode());
     }
 
+    @Test
+    void testUpdateEventStatusOK()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
 
+        EventEntity updatedEventEntity = new EventEntity(
+                null,
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                user.userId(),
+                "Updated test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
+        );
+
+        EventDto expectedDto = EventDto.fromEventEntity(updatedEventEntity);
+
+        Mockito.when(eventService.updateEvent(1L, updateDto, user)).thenReturn(Optional.of(updatedEventEntity));
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.OK, updatedEvent.getStatusCode());
+        assertNotNull(updatedEvent.getBody());
+        assertEquals(expectedDto, updatedEvent.getBody());
+
+    }
+
+    @Test
+    void testUpdateEventStatusBadRequest()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+
+
+
+        Mockito.when(eventService.updateEvent(1L, updateDto, user)).thenReturn(Optional.empty());
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.BAD_REQUEST, updatedEvent.getStatusCode());
+
+    }
 }
