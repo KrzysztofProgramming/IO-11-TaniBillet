@@ -2,7 +2,7 @@
   <div class="logo" (click)="goToMain()">Tani-bilet</div>
   <span class="spacer"></span>
   <button mat-icon-button (click)="goToUserProfile()"><mat-icon>person_outline</mat-icon></button>
-  <button mat-button>Zaloguj się</button>
+  <button mat-button (click)="login()">{{ !loggedIn ? 'Zaloguj się' : 'Wyloguj się'}}</button>
 </mat-toolbar>
 
 <div class="main-container">

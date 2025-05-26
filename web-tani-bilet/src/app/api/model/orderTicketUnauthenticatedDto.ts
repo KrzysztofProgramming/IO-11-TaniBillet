@@ -10,11 +10,8 @@
  * Do not edit the class manually.
  */
 
-export interface GetTicketDto { 
-    id: number;
-    qrCodeId: string;
-    boughtPrice: number;
+export interface OrderTicketUnauthenticatedDto { 
     seat: number;
     eventId: number;
-    userId: string;
+    email: string;
 }
