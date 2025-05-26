@@ -21,10 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.script.ScriptEngine;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -101,6 +98,23 @@ class EventControllerTest {
 
     @Test
     void testGetEvents() {
+        //Arrange
+        Mockito.when(eventService.createEvent(createEventDto, user)).thenReturn(Optional.of(eventEntity));
+        ResponseEntity<EventDto> event = eventController.createEvent(user, createEventDto);
+
+        Page<EventEntity> page = new PageImpl<>(List.of(eventEntity));
+        Mockito.when(eventService.getAllEvents(Mockito.any(Pageable.class))).thenReturn(page);
+
+        EventDto expectedDto = EventDto.fromEventEntity(eventEntity);
+
+        PageableDto pageable = new PageableDto(0, 100);
+
+        //Act
+        Page<EventDto> events = eventController.getEvents(pageable);
+
+        //Assert
+        assertEquals(1, events.getTotalElements());
+        assertEquals(expectedDto, events.getContent().get(0));
 
     }
 
