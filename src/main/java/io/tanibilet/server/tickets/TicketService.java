@@ -43,7 +43,7 @@ public class TicketService {
         return orderTicketForEvent(
                 orderTicketDto,
                 ticketEntity -> mailService.sendTicketViaEmail(ticketEntity, user),
-                Optional.empty()
+                Optional.of(user.userId())
         );
     }
 
@@ -61,6 +61,7 @@ public class TicketService {
             long maxTicketCount = event.getMaxTicketCount();
             long ticketCount = ticketRepository.countByEventId(event.getId());
             if (ticketCount >= maxTicketCount) return Optional.empty();
+            if(event.getIsBuyingTicketsTurnedOff()) return Optional.empty();
 
             if(ticketRepository.existsByEventIdAndSeat(event.getId(), orderTicketDto.seat())){
                 // seat is already occupied
