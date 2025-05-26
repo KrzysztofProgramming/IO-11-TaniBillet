@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,10 +27,22 @@ export class AuthService {
     return this.oauthService.hasValidAccessToken();
   }
 
+  get decodedToken(): any {
+    try {
+      return jwtDecode(this.token);
+    } catch (e) {
+      console.error('Invalid token', e);
+      return null;
+    }
+  }
+
+  get roles(): string[] {
+    const decoded = this.decodedToken;
+    return decoded?.resource_access?.['tani-bilet-app']?.roles || [];
+  }
+
   hasRole(role: string): boolean {
-    const claims: any = this.oauthService.getIdentityClaims();
-    const clientRoles =
-      claims?.resource_access?.['tani-bilet-app']?.roles || [];
-    return clientRoles.includes(role);
+    console.log(this.roles.includes(role));
+    return this.roles.includes(role);
   }
 }

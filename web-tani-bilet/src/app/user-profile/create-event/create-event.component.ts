@@ -37,7 +37,7 @@ export class CreateEventComponent implements OnInit {
 
   onSubmit(): void {
     if (this.eventForm.valid) {
-      // this.eventService.createEvent(this.eventForm.value);
+      this.eventService.createEvent(this.eventForm.value).subscribe();
       console.log('user form', this.eventForm);
     } else {
       console.log('Formularz zawiera błędy');

@@ -32,17 +32,27 @@ import { AuthService } from '../shared/services/security/auth.service';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss',
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   private authService = inject(AuthService);
 
   get isEventCreator(): boolean {
     return this.authService.hasRole('event_creator');
   }
 
-  activeComponent: string = 'showData';
+  ngOnInit(): void {
+    this.authService.hasRole('event_creator');
+  }
+
+  activeComponent: string = 'activeTickets';
 
   showData() {
-    this.activeComponent = 'showData';
+    const redirectUrl =
+      'http://localhost:8080/auth/realms/tani-bilet/account' +
+      '?referrer=tani-bilet-app' +
+      '&referrer_uri=' +
+      encodeURIComponent('http://localhost:4200');
+
+    window.location.href = redirectUrl;
   }
 
   editData() {

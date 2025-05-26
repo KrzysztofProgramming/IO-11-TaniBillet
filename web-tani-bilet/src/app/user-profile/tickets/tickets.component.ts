@@ -6,11 +6,7 @@ import {
   TABLE_ACTION_KEY,
   TableAction,
 } from '../../shared/components/data-grid/data-grid.component';
-import {
-  GetTicketDto,
-  PageableDto,
-  TicketControllerService,
-} from '@api/index';
+import { GetTicketDto, PageableDto, TicketControllerService } from '@api/index';
 
 @Component({
   selector: 'app-tickets',
@@ -24,7 +20,7 @@ export class TicketsComponent {
   private ticketService = inject(TicketControllerService);
 
   data$ = this.ticketService
-    .getTicketsForUser({ pageNumber: 0, pageSize: 100 } as PageableDto)
+    .getTicketsForUser({ pageNumber: 0, pageSize: 100 })
     .pipe(map((res) => res.content ?? []));
 
   displayedColumns: string[] = [
