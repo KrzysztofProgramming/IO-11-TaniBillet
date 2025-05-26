@@ -218,4 +218,31 @@ class EventControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, updatedEvent.getStatusCode());
 
     }
+
+    @Test
+    void testDeleteEventStatusOK()
+    {
+        //Arrange
+        Mockito.when(eventService.deleteEvent(1L, user)).thenReturn(true);
+
+        //Act
+        ResponseEntity<?> ent = eventController.deleteEvent(user, 1L);
+
+        //Assert
+        assertEquals(HttpStatus.OK, ent.getStatusCode());
+        assertNull(ent.getBody());
+    }
+
+    @Test
+    void testDeleteEventStatusNotFound()
+    {
+        //Arrange
+        Mockito.when(eventService.deleteEvent(1L, user)).thenReturn(false);
+
+        //Act
+        ResponseEntity<?> ent = eventController.deleteEvent(user, 1L);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ent.getStatusCode());
+    }
 }
