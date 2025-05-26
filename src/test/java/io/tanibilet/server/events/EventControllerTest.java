@@ -3,14 +3,12 @@ package io.tanibilet.server.events;
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
 import io.tanibilet.server.events.dto.EventDto;
+import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.shared.PageableDto;
-import io.tanibilet.server.tickets.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.script.ScriptEngine;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -60,7 +57,10 @@ class EventControllerTest {
                 ZonedDateTime.now().plusDays(2),
                 "Kraków",
                 50.0,
-                200
+                200,
+                "Test description",
+                false,
+                EventType.CONCERT
         );
 
         eventEntity = new EventEntity(
@@ -71,7 +71,11 @@ class EventControllerTest {
                 "Kraków",
                 50.0,
                 200,
-                user.userId()
+                user.userId(),
+                "Test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
         );
     }
     
@@ -99,9 +103,6 @@ class EventControllerTest {
     @Test
     void testGetEvents() {
         //Arrange
-        Mockito.when(eventService.createEvent(createEventDto, user)).thenReturn(Optional.of(eventEntity));
-        ResponseEntity<EventDto> event = eventController.createEvent(user, createEventDto);
-
         Page<EventEntity> page = new PageImpl<>(List.of(eventEntity));
         Mockito.when(eventService.getAllEvents(Mockito.any(Pageable.class))).thenReturn(page);
 
@@ -119,7 +120,31 @@ class EventControllerTest {
     }
 
     @Test
-    void testGetEventById() {
+    void testGetEventByIdStatusOK() {
+        //Arrange
+        Mockito.when(eventService.getEventById(1L)).thenReturn(Optional.of(eventEntity));
+        EventDto expectedDto = EventDto.fromEventEntity(eventEntity);
 
+        //Act
+        ResponseEntity<EventDto> event = eventController.getEventById(1L);
+
+        //Assert
+        assertEquals(HttpStatus.OK, event.getStatusCode());
+        assertNotNull(event.getBody());
+        assertEquals(expectedDto, event.getBody());
     }
+
+    @Test
+    void testGetEventByIdStatusNotFound() {
+        //Arrange
+        Mockito.when(eventService.getEventById(1L)).thenReturn(Optional.empty());
+
+        //Act
+        ResponseEntity<EventDto> event = eventController.getEventById(1L);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, event.getStatusCode());
+    }
+
+
 }
