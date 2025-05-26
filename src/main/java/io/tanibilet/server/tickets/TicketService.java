@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -31,8 +32,8 @@ public class TicketService {
         return ticketRepository.findById(id);
     }
 
-    public Page<TicketEntity> getTicketsForUser(String userId, Pageable pageable) {
-        return ticketRepository.findByUserId(userId, pageable);
+    public List<TicketEntity> getTicketsForUser(String userId) {
+        return ticketRepository.findByUserId(userId);
     }
 
     public Optional<TicketEntity> getTicketForUser(String userId, Long ticketId) {

@@ -3,14 +3,14 @@ package io.tanibilet.server.events;
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
 import io.tanibilet.server.events.dto.EventDto;
-import io.tanibilet.server.shared.PageableDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
@@ -29,13 +29,13 @@ public class EventController {
     }
 
     @GetMapping("/crud")
-    public Page<EventDto> getEvents(@Valid PageableDto pageable) {
-        return eventService.getAllEvents(pageable.toPageable()).map(EventDto::fromEventEntity);
+    public List<EventDto> getEvents() {
+        return eventService.getAllEvents().stream().map(EventDto::fromEventEntity).toList();
     }
 
     @GetMapping("/createdByUserOnly")
-    public Page<EventDto> getEventForUser(@Valid PageableDto pageable, @AuthenticationPrincipal UserPrincipal user) {
-        return eventService.getAllEventsForUser(user.userId(), pageable.toPageable()).map(EventDto::fromEventEntity);
+    public List<EventDto> getEventForUser(@AuthenticationPrincipal UserPrincipal user) {
+        return eventService.getAllEventsForUser(user.userId()).stream().map(EventDto::fromEventEntity).toList();
     }
 
     @GetMapping("/crud/{id}")

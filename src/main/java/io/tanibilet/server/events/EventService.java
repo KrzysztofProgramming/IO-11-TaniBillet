@@ -4,12 +4,12 @@ import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
 import io.tanibilet.server.events.entities.EventEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,12 +29,12 @@ public class EventService {
         return Optional.of(saved);
     }
 
-    public Page<EventEntity> getAllEvents(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+    public List<EventEntity> getAllEvents() {
+        return eventRepository.findAll();
     }
 
-    public Page<EventEntity> getAllEventsForUser(String userId, Pageable pageable) {
-        return eventRepository.findAllByOwnerUserId(userId, pageable);
+    public Collection<EventEntity> getAllEventsForUser(String userId) {
+        return eventRepository.findAllByOwnerUserId(userId);
     }
 
     @Transactional(readOnly = true)
