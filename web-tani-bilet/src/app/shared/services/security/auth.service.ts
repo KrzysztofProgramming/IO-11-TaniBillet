@@ -14,6 +14,7 @@ export class AuthService {
   }
 
   get identity(): any {
+    console.log(this.oauthService.getIdentityClaims());
     return this.oauthService.getIdentityClaims();
   }
 
@@ -23,5 +24,12 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     return this.oauthService.hasValidAccessToken();
+  }
+
+  hasRole(role: string): boolean {
+    const claims: any = this.oauthService.getIdentityClaims();
+    const clientRoles =
+      claims?.resource_access?.['tani-bilet-app']?.roles || [];
+    return clientRoles.includes(role);
   }
 }

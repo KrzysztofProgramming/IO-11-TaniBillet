@@ -1,0 +1,118 @@
+<div class="event-form">
+  <h2>Utwórz wydarzenie</h2>
+
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+    <label for="name">Nazwa wydarzenia:</label>
+    <input id="name" formControlName="name" type="text" />
+    <div
+      *ngIf="
+        eventForm.controls['name'].invalid && eventForm.controls['name'].touched
+      "
+    >
+      Nazwa jest wymagana (minimum 3 znaki).
+    </div>
+
+    <label for="eventStartTimeMillis">Data rozpoczęcia:</label>
+    <input
+      id="eventStartTimeMillis"
+      formControlName="eventStartTimeMillis"
+      type="datetime-local"
+    />
+    <div
+      *ngIf="
+        eventForm.controls['eventStartTimeMillis'].invalid &&
+        eventForm.controls['eventStartTimeMillis'].touched
+      "
+    >
+      Data rozpoczęcia jest wymagana.
+    </div>
+
+    <label for="eventEndTimeMillis">Data zakończenia:</label>
+    <input
+      id="eventEndTimeMillis"
+      formControlName="eventEndTimeMillis"
+      type="datetime-local"
+    />
+    <div
+      *ngIf="
+        eventForm.controls['eventEndTimeMillis'].invalid &&
+        eventForm.controls['eventEndTimeMillis'].touched
+      "
+    >
+      Data zakończenia jest wymagana.
+    </div>
+
+    <label for="location">Miejsce:</label>
+    <input id="location" formControlName="location" type="text" />
+    <div
+      *ngIf="
+        eventForm.controls['location'].invalid &&
+        eventForm.controls['location'].touched
+      "
+    >
+      Miejsce wydarzenia jest wymagane.
+    </div>
+
+    <label for="ticketPrice">Cena biletu:</label>
+    <input
+      id="ticketPrice"
+      formControlName="ticketPrice"
+      type="number"
+      step="0.01"
+    />
+    <div
+      *ngIf="
+        eventForm.controls['ticketPrice'].invalid &&
+        eventForm.controls['ticketPrice'].touched
+      "
+    >
+      Cena jest wymagana i nie może być mniejsza niż 0.
+    </div>
+
+    <label for="maxTicketCount">Liczba biletów:</label>
+    <input id="maxTicketCount" formControlName="maxTicketCount" type="number" />
+    <div
+      *ngIf="
+        eventForm.controls['maxTicketCount'].invalid &&
+        eventForm.controls['maxTicketCount'].touched
+      "
+    >
+      Liczba biletów jest wymagana i musi być większa lub równa 1.
+    </div>
+
+    <label for="description">Opis:</label>
+    <textarea id="description" formControlName="description"></textarea>
+    <div
+      *ngIf="
+        eventForm.controls['description'].invalid &&
+        eventForm.controls['description'].touched
+      "
+    >
+      Opis jest wymagany.
+    </div>
+
+    <div class="form-group toggle-switch">
+      <label for="isBuyingTicketsTurnedOff">Wyłącz sprzedaż biletów:</label>
+      <label class="switch">
+        <input
+          id="isBuyingTicketsTurnedOff"
+          formControlName="isBuyingTicketsTurnedOff"
+          type="checkbox"
+        />
+        <span class="slider round"></span>
+      </label>
+    </div>
+    <div
+      *ngIf="
+        eventForm.controls['isBuyingTicketsTurnedOff'].invalid &&
+        eventForm.controls['isBuyingTicketsTurnedOff'].touched
+      "
+    >
+      Wartość jest wymagana.
+    </div>
+
+    <button type="submit" [disabled]="eventForm.invalid">
+      Utwórz wydarzenie
+    </button>
+  </form>
+</div>

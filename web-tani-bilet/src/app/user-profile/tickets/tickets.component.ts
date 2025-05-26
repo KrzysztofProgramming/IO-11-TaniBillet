@@ -1,75 +1,61 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, inject } from '@angular/core';
+import { map, of } from 'rxjs';
+import {
+  DataGridComponent,
+  TABLE_ACTION_KEY,
+  TableAction,
+} from '../../shared/components/data-grid/data-grid.component';
+import {
+  GetTicketDto,
+  PageableDto,
+  TicketControllerService,
+} from '@api/index';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatButtonModule,
-  ],
+  imports: [CommonModule, DataGridComponent],
+  providers: [TicketControllerService],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.scss',
 })
 export class TicketsComponent {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  activeTickets = [
-    {
-      id: 1,
-      event: 'Koncert',
-      date: '2023-06-10',
-      place: 'Warszawa',
-      status: 'Aktywny',
-    },
-    {
-      id: 2,
-      event: 'Teatr',
-      date: '2023-06-12',
-      place: 'Kraków',
-      status: 'Aktywny',
-    },
-    {
-      id: 3,
-      event: 'Film',
-      date: '2023-06-15',
-      place: 'Wrocław',
-      status: 'Aktywny',
-    },
-    {
-      id: 4,
-      event: 'Konferencja',
-      date: '2023-06-20',
-      place: 'Poznań',
-      status: 'Aktywny',
-    },
-  ];
+  private ticketService = inject(TicketControllerService);
+
+  data$ = this.ticketService
+    .getTicketsForUser({ pageNumber: 0, pageSize: 100 } as PageableDto)
+    .pipe(map((res) => res.content ?? []));
 
   displayedColumns: string[] = [
     'id',
-    'event',
-    'date',
-    'place',
-    'status',
-    'details',
+    'seat',
+    'boughtPrice',
+    'eventId',
+    'qrCodeId',
   ];
-  dataSource = new MatTableDataSource(this.activeTickets);
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+  columnHeaders = {
+    id: 'ID',
+    seat: 'Miejsce',
+    boughtPrice: 'Cena',
+    eventId: 'ID wydarzenia',
+    qrCodeId: 'Kod QR',
+  };
 
-  showDetails(ticket: any) {
-    alert(
-      `Szczegóły biletu:\nEvent: ${ticket.event}\nData: ${ticket.date}\nMiejsce: ${ticket.place}\nStatus: ${ticket.status}`
-    );
-  }
+  rowActions: TableAction<GetTicketDto>[] = [
+    {
+      key: TABLE_ACTION_KEY.EDIT,
+      name: 'Szczegóły',
+      color: 'neutral',
+      callback: (ticket?: GetTicketDto) => {
+        if (!ticket) return;
+
+        alert(
+          `Szczegóły biletu:\nID: ${ticket.id}\nWydarzenie: ${ticket.eventId}\nCena: ${ticket.boughtPrice} zł\nMiejsce: ${ticket.seat}`
+        );
+      },
+      availabilityFn: (ticket?: GetTicketDto) => !!ticket,
+    },
+  ];
 }

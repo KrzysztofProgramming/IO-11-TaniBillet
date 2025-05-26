@@ -1,19 +1,23 @@
 <mat-toolbar color="primary" class="navbar">
   <div class="logo" (click)="goToMain()">Tani-bilet</div>
   <span class="spacer"></span>
-  <button mat-icon-button (click)="goToUserProfile()"><mat-icon>person_outline</mat-icon></button>
-  <button mat-button (click)="login()">{{ !loggedIn ? 'Zaloguj się' : 'Wyloguj się'}}</button>
+  <button mat-icon-button (click)="goToUserProfile()">
+    <mat-icon>person_outline</mat-icon>
+  </button>
+  <button mat-button (click)="login()">
+    {{ !loggedIn ? "Zaloguj się" : "Wyloguj się" }}
+  </button>
 </mat-toolbar>
 
 <div class="main-container">
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav mode="side" opened class="sidebadr">
-        <app-side-menu></app-side-menu>
+    <mat-sidenav *ngIf="showSideMenu" mode="side" opened class="sidebadr">
+      <app-side-menu></app-side-menu>
     </mat-sidenav>
 
     <mat-sidenav-content class="content">
       <main id="main-content">
-          <router-outlet></router-outlet>
+        <router-outlet></router-outlet>
       </main>
     </mat-sidenav-content>
   </mat-sidenav-container>
