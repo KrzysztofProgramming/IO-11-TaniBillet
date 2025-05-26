@@ -16,4 +16,9 @@ export interface EventDto {
     eventStartTimeMillis: Date;
     eventEndTimeMillis: Date;
     location: string;
+    description: string;
+    isBuyingTicketsTurnedOff: boolean;
+    ownerId: string;
+    maxTicketsCount: number;
+    ticketsSoldCount: number;
 }

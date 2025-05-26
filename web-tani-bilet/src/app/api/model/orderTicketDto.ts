@@ -11,6 +11,6 @@
  */
 
 export interface OrderTicketDto { 
-    seat?: string;
-    eventId?: number;
+    seat: number;
+    eventId: number;
 }

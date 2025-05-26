@@ -2,13 +2,14 @@ package io.tanibilet.server.events;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
-import io.tanibilet.server.tickets.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,10 @@ public class EventService {
         return eventRepository.findAll(pageable);
     }
 
+    public Page<EventEntity> getAllEventsForUser(String userId, Pageable pageable) {
+        return eventRepository.findAllByOwnerUserId(userId, pageable);
+    }
+
     @Transactional(readOnly = true)
     public Optional<EventEntity> getEventById(Long id) {
         return eventRepository.findById(id);
@@ -45,18 +50,20 @@ public class EventService {
         EventEntity existing = optionalEvent.get();
         if (!existing.getOwnerUserId().equals(principal.userId())) return Optional.empty();
 
-        existing.setName(updateDto.name());
-        existing.setEventStartTimeMillis(updateDto.eventStartTimeMillis());
-        existing.setEventEndTimeMillis(updateDto.eventEndTimeMillis());
-        existing.setLocation(updateDto.location());
+        existing.copyPropertiesFromDto(updateDto);
 
         return Optional.of(eventRepository.save(existing));
     }
 
     public boolean deleteEvent(Long id, UserPrincipal principal) {
-        if (!eventRepository.existsById(id)) {
-            return false;
-        }
+        Optional<EventEntity> optionalEvent = eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) return false;
+
+        EventEntity existing = optionalEvent.get();
+
+        if (!existing.getOwnerUserId().equals(principal.userId())) return false;
+        if (!eventRepository.existsById(id)) return false;
+
         eventRepository.deleteById(id);
         return true;
     }
@@ -70,7 +77,11 @@ public class EventService {
                 dto.location(),
                 dto.ticketPrice(),
                 dto.maxTicketCount(),
-                userId
+                userId,
+                dto.description(),
+                dto.isBuyingTicketsTurnedOff(),
+                dto.eventType(),
+                new HashSet<>()
         );
     }
 }

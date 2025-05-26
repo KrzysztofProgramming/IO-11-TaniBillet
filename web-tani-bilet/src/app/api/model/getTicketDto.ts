@@ -11,10 +11,10 @@
  */
 
 export interface GetTicketDto { 
-    id?: number;
-    qrCodeId?: string;
-    boughtPrice?: number;
-    seat?: string;
-    eventId?: number;
-    userId?: string;
+    id: number;
+    qrCodeId: string;
+    boughtPrice: number;
+    seat: number;
+    eventId: number;
+    userId: string;
 }
