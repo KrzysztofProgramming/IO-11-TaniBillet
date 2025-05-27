@@ -4,14 +4,10 @@ import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
 import io.tanibilet.server.events.dto.EventDto;
 import io.tanibilet.server.events.entities.EventType;
-import io.tanibilet.server.shared.PageableDto;
 import io.tanibilet.server.events.entities.EventEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -103,19 +99,17 @@ class EventControllerTest {
     @Test
     void testGetEvents() {
         //Arrange
-        Page<EventEntity> page = new PageImpl<>(List.of(eventEntity));
-        Mockito.when(eventService.getAllEvents(Mockito.any(Pageable.class))).thenReturn(page);
+        Mockito.when(eventService.getAllEvents()).thenReturn(List.of(eventEntity));
 
         EventDto expectedDto = EventDto.fromEventEntity(eventEntity);
 
-        PageableDto pageable = new PageableDto(0, 100);
 
         //Act
-        Page<EventDto> events = eventController.getEvents(pageable);
+        List<EventDto> events = eventController.getEvents();
 
         //Assert
-        assertEquals(1, events.getTotalElements());
-        assertEquals(expectedDto, events.getContent().get(0));
+        assertEquals(1, events.size());
+        assertEquals(expectedDto, events.get(0));
 
     }
 
