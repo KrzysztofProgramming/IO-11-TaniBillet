@@ -210,40 +210,137 @@ public class EventServiceTest {
     void testUpdateEventSuccessful()
     {
         //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+
+        EventEntity updatedEventEntity = new EventEntity(
+                null,
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                user.userId(),
+                "Updated test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(eventRepository.save(any(EventEntity.class))).thenReturn(updatedEventEntity);
 
         //Act
+        Optional<EventEntity> event = eventService.updateEvent(1L, updateDto, user);
 
         //Assert
+        assertTrue(event.isPresent());
+        assertEquals(updatedEventEntity, event.get());
+
+        verify(eventRepository, times(1)).save(any(EventEntity.class));
     }
 
     @Test
     void testUpdateEventNonExistentEvent()
     {
         //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
         //Act
+        Optional<EventEntity> event = eventService.updateEvent(1L, updateDto, user);
 
         //Assert
+        assertTrue(event.isEmpty());
+
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
+
     }
 
     @Test
-    void testUpdateEventExpiredEvent()
+    void testUpdateEventWrongEventDate()
     {
         //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(1),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
 
         //Act
+        Optional<EventEntity> event = eventService.updateEvent(1L, updateDto, user);
 
         //Assert
+        assertTrue(event.isEmpty());
+
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
     }
 
     @Test
     void testUpdateEventWrongUser()
     {
         //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_event_creator"));
+
+        UserPrincipal user2 = new UserPrincipal(
+                "2",
+                "test2@mail.com",
+                "TestUser2",
+                true,
+                "Gordon",
+                "Freeman",
+                authorities
+        );
 
         //Act
+        Optional<EventEntity> event = eventService.updateEvent(1L, updateDto, user2);
 
         //Assert
+        assertTrue(event.isEmpty());
+
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
     }
 
     @Test
