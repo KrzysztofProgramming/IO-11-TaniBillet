@@ -1,0 +1,216 @@
+package io.tanibilet.server.events;
+
+import io.tanibilet.server.auth.UserPrincipal;
+import io.tanibilet.server.events.dto.CreateEventDto;
+import io.tanibilet.server.events.dto.EventDto;
+import io.tanibilet.server.events.entities.EventType;
+import io.tanibilet.server.shared.PageableDto;
+import io.tanibilet.server.events.entities.EventEntity;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.time.ZonedDateTime;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+public class EventServiceTest {
+    EventRepository eventRepository = mock(EventRepository.class);
+    private EventService eventService = new EventService(eventRepository);
+
+    private static UserPrincipal user;
+    private static CreateEventDto createEventDto;
+    private static EventEntity eventEntity;
+
+    @BeforeAll
+    static void SetUp()
+    {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_event_creator"));
+
+        user = new UserPrincipal(
+                "1",
+                "test@mail.com",
+                "TestUser",
+                true,
+                "John",
+                "Doe",
+                authorities
+        );
+
+        createEventDto = new CreateEventDto(
+                "Test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(2),
+                "Kraków",
+                50.0,
+                200,
+                "Test description",
+                false,
+                EventType.CONCERT
+        );
+
+        eventEntity = new EventEntity(
+                null,
+                "Test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(2),
+                "Kraków",
+                50.0,
+                200,
+                user.userId(),
+                "Test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
+        );
+
+    }
+
+    @Test
+    void testCreateEventSuccessful()
+    {
+        //Arrange
+        Mockito.when(eventRepository.save(any(EventEntity.class))).thenReturn(eventEntity);
+
+        //Act
+        Optional<EventEntity> event = eventService.createEvent(createEventDto, user);
+
+        //Assert
+        assertTrue(event.isPresent());
+        verify(eventRepository, times(1)).save(any(EventEntity.class));
+    }
+
+    @Test
+    void testCreateEventWrongEventTime()
+    {
+        //Arrange
+        CreateEventDto createEventDtoWithWrongDate = new CreateEventDto(
+                "Test",
+                ZonedDateTime.now().plusDays(2),
+                ZonedDateTime.now().plusDays(1),
+                "Kraków",
+                50.0,
+                200,
+                "Test description",
+                false,
+                EventType.CONCERT
+        );
+        //Act
+        Optional<EventEntity> event = eventService.createEvent(createEventDtoWithWrongDate, user);
+
+        //Assert
+        assertTrue(event.isEmpty());
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
+    }
+
+    @Test
+    void testGetAllEvents()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testGetAllEventsForUser()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testGetEventById()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testUpdateEventSuccessful()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testUpdateEventNonExistentEvent()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testUpdateEventExpiredEvent()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testUpdateEventWrongUser()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testDeleteEventSuccessful()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testDeleteEventNonExistentEvent()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test
+    void testDeleteEventWrongUser()
+    {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+}
