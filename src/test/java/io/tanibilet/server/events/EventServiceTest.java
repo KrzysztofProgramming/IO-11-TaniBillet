@@ -194,10 +194,16 @@ public class EventServiceTest {
     void testGetEventById()
     {
         //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
 
         //Act
+        Optional<EventEntity> event = eventService.getEventById(1L);
 
         //Assert
+        assertTrue(event.isPresent());
+        assertEquals(eventEntity, event.get());
+
+        verify(eventRepository, times(1)).findById(1L);
     }
 
     @Test
