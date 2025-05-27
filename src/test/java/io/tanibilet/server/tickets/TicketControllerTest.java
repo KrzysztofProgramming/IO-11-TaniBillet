@@ -5,8 +5,10 @@ import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.tickets.dto.GetTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketDto;
+import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
 import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -26,11 +28,11 @@ public class TicketControllerTest {
 
     private TicketController ticketController = new TicketController(ticketService);
 
-    private static UserPrincipal user;
-    private static TicketEntity ticketEntity;
+    private UserPrincipal user;
+    private TicketEntity ticketEntity;
 
-    @BeforeAll
-    static void SetUp() {
+    @BeforeEach
+    void SetUp() {
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
@@ -149,20 +151,32 @@ public class TicketControllerTest {
     void testOrderUnauthenticatedTicketStatusOk()
     {
         //Arrange
+        ticketEntity.setUserId(null);
+        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(12, 1L, "test@email.com");
+        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(Optional.of(ticketEntity));
+        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
 
         //Assert
+        assertEquals(HttpStatus.OK, ticket.getStatusCode());
+        assertNotNull(ticket.getBody());
+        assertEquals(expectedTicketDto, ticket.getBody());
     }
 
     @Test
     void testOrderUnauthenticatedTicketStatusNotFound()
     {
         //Arrange
+        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(12, 1L, "test@email.com");
+        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(Optional.empty());
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
 
         //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
     }
 
 
