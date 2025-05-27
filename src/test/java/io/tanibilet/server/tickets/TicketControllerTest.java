@@ -1,15 +1,18 @@
-﻿package io.tanibilet.server.tickets;
+package io.tanibilet.server.tickets;
 
 import io.tanibilet.server.auth.UserPrincipal;
-
+import io.tanibilet.server.events.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventType;
+import io.tanibilet.server.tickets.dto.GetTicketDto;
+import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,7 +21,10 @@ public class TicketControllerTest {
 
     private TicketService ticketService = mock(TicketService.class);
 
+    private TicketController ticketController = new TicketController(ticketService);
+
     private static UserPrincipal user;
+    private static TicketEntity ticketEntity;
 
     @BeforeAll
     static void SetUp() {
@@ -36,16 +42,44 @@ public class TicketControllerTest {
                 "Doe",
                 authorities
         );
+        UUID uuid = new UUID(1000L, 500L);
+
+        EventEntity eventEntity = new EventEntity(
+                null,
+                "Test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(2),
+                "Kraków",
+                50.0,
+                200,
+                user.userId(),
+                "Test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
+        );
+
+        ticketEntity = new TicketEntity();
+        ticketEntity.setId(1L);
+        ticketEntity.setQrCodeId(uuid);
+        ticketEntity.setBoughtPrice(50.0);
+        ticketEntity.setSeat(12);
+        ticketEntity.setEvent(eventEntity);
+        ticketEntity.setUserId(user.userId());
     }
 
     @Test
     void testGetTicketsForUser()
     {
         //Arrange
+        when(ticketService.getTicketsForUser(user.userId())).thenReturn(List.of(ticketEntity));
 
         //Act
+        List<GetTicketDto> tickets = ticketController.getTicketsForUser(user);
 
         //Assert
+        assertEquals(1, tickets.size());
+        assertEquals(tickets, List.of(GetTicketDto.fromTicketEntity(ticketEntity)));
     }
 
     @Test
