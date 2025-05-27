@@ -4,6 +4,7 @@ import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.tickets.dto.GetTicketDto;
+import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -117,20 +118,31 @@ public class TicketControllerTest {
     void testOrderTicketStatusOk()
     {
         //Arrange
+        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.of(ticketEntity));
+        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
+        assertEquals(HttpStatus.OK, ticket.getStatusCode());
+        assertNotNull(ticket.getBody());
+        assertEquals(expectedTicketDto, ticket.getBody());
     }
 
     @Test
     void testOrderTicketStatusNotFound()
     {
         //Arrange
+        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.empty());
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
     }
 
     @Test
