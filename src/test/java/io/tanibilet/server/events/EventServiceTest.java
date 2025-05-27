@@ -3,14 +3,10 @@ package io.tanibilet.server.events;
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
 import io.tanibilet.server.events.entities.EventType;
-import io.tanibilet.server.shared.PageableDto;
 import io.tanibilet.server.events.entities.EventEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -133,20 +129,18 @@ public class EventServiceTest {
                 eventEntity,
                 eventEntity2
             );
-        Pageable pageable = new PageableDto(0, 100).toPageable();
-        Page<EventEntity> expectedPage = new PageImpl<>(events, pageable, events.size());
 
-        when(eventRepository.findAll(pageable)).thenReturn(expectedPage);
+        when(eventRepository.findAll()).thenReturn(events);
 
         //Act
-        Page<EventEntity> result = eventService.getAllEvents(pageable);
+        List<EventEntity> result = eventService.getAllEvents();
 
         //Assert
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
-        assertEquals(events, result.getContent());
+        assertEquals(2, result.size());
+        assertEquals(events, result);
 
-        verify(eventRepository, times(1)).findAll(pageable);
+        verify(eventRepository, times(1)).findAll();
     }
 
     @Test
@@ -171,20 +165,18 @@ public class EventServiceTest {
                 eventEntity,
                 eventEntity2
         );
-        Pageable pageable = new PageableDto(0, 100).toPageable();
-        Page<EventEntity> expectedPage = new PageImpl<>(List.of(eventEntity), pageable, 1);
 
-        when(eventRepository.findAllByOwnerUserId(user.userId(), pageable)).thenReturn(expectedPage);
+        when(eventRepository.findAllByOwnerUserId(user.userId())).thenReturn(List.of(eventEntity));
 
         //Act
-        Page<EventEntity> result = eventService.getAllEventsForUser(user.userId(), pageable);
+        List<EventEntity> result = eventService.getAllEventsForUser(user.userId()).stream().toList();
 
         //Assert
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals(List.of(eventEntity), result.getContent());
+        assertEquals(1, result.size());
+        assertEquals(List.of(eventEntity), result);
 
-        verify(eventRepository, times(1)).findAllByOwnerUserId(user.userId(), pageable);
+        verify(eventRepository, times(1)).findAllByOwnerUserId(user.userId());
     }
 
     @Test
