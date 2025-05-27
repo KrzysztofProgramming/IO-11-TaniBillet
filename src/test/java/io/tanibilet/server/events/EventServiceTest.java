@@ -2,7 +2,6 @@ package io.tanibilet.server.events;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
-import io.tanibilet.server.events.dto.EventDto;
 import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.shared.PageableDto;
 import io.tanibilet.server.events.entities.EventEntity;
@@ -12,8 +11,6 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -347,29 +344,61 @@ public class EventServiceTest {
     void testDeleteEventSuccessful()
     {
         //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(eventRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(eventRepository).deleteById(1L);
 
         //Act
+        boolean result = eventService.deleteEvent(1L, user);
 
         //Assert
+        assertTrue(result);
+
+        verify(eventRepository, times(1)).deleteById(1L);
     }
 
     @Test
     void testDeleteEventNonExistentEvent()
     {
         //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
         //Act
+        boolean result = eventService.deleteEvent(1L, user);
 
         //Assert
+        assertFalse(result);
+
+        verify(eventRepository, times(0)).deleteById(1L);
     }
 
     @Test
     void testDeleteEventWrongUser()
     {
         //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_event_creator"));
+
+        UserPrincipal user2 = new UserPrincipal(
+                "2",
+                "test2@mail.com",
+                "TestUser2",
+                true,
+                "Gordon",
+                "Freeman",
+                authorities
+        );
 
         //Act
+        boolean result = eventService.deleteEvent(1L, user2);
 
         //Assert
+        assertFalse(result);
+
+        verify(eventRepository, times(0)).deleteById(1L);
     }
 }
