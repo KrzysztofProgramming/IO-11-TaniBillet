@@ -8,6 +8,8 @@ import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -86,20 +88,29 @@ public class TicketControllerTest {
     void testGetTicketForUserStatusOk()
     {
         //Arrange
+        when(ticketService.getTicketForUser(user.userId(), 1L)).thenReturn(Optional.of(ticketEntity));
+        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.getTicketForUser(user, 1L);
 
         //Assert
+        assertEquals(HttpStatus.OK, ticket.getStatusCode());
+        assertNotNull(ticket.getBody());
+        assertEquals(expectedTicketDto, ticket.getBody());
     }
 
     @Test
     void testGetTicketForUserStatusNotFound()
     {
         //Arrange
+        when(ticketService.getTicketForUser(user.userId(), 1L)).thenReturn(Optional.empty());
 
         //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.getTicketForUser(user, 1L);
 
         //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
     }
 
     @Test
