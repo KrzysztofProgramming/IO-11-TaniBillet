@@ -118,10 +118,38 @@ public class EventServiceTest {
     void testGetAllEvents()
     {
         //Arrange
+        EventEntity eventEntity2 = new EventEntity(
+                null,
+                "Test2",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                25.0,
+                100,
+                user.userId(),
+                "Test2 description",
+                false,
+                EventType.CONFERENCE,
+                new HashSet<>()
+        );
+        List<EventEntity> events = List.of(
+                eventEntity,
+                eventEntity2
+            );
+        Pageable pageable = new PageableDto(0, 100).toPageable();
+        Page<EventEntity> expectedPage = new PageImpl<>(events, pageable, events.size());
+
+        when(eventRepository.findAll(pageable)).thenReturn(expectedPage);
 
         //Act
+        Page<EventEntity> result = eventService.getAllEvents(pageable);
 
         //Assert
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(events, result.getContent());
+
+        verify(eventRepository, times(1)).findAll(pageable);
     }
 
     @Test
