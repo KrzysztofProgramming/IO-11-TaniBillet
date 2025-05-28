@@ -15,7 +15,6 @@ export class AuthService {
   }
 
   get identity(): any {
-    console.log(this.oauthService.getIdentityClaims());
     return this.oauthService.getIdentityClaims();
   }
 
@@ -42,7 +41,6 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    console.log(this.roles.includes(role));
     return this.roles.includes(role);
   }
 }

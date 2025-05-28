@@ -6,18 +6,33 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { EventControllerService } from '@api/index';
+import { AuthService } from '../../shared/services/security/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { Configuration, EventControllerService } from '../../apiv2';
+import { SnackBarService } from '../../shared/services/snackbar.service';
 
 @Component({
   selector: 'app-create-event',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  providers: [EventControllerService],
+  providers: [
+    {
+      provide: EventControllerService,
+      useFactory: (httpClient: HttpClient, authService: AuthService) => {
+        const config = new Configuration({
+          accessToken: () => authService.token,
+        });
+        return new EventControllerService(httpClient, '', config);
+      },
+      deps: [HttpClient, AuthService],
+    },
+  ],
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.scss',
 })
 export class CreateEventComponent implements OnInit {
   private eventService = inject(EventControllerService);
+  private snackBarService = inject(SnackBarService);
   eventForm!: FormGroup;
 
   private fb = inject(FormBuilder);
@@ -32,13 +47,40 @@ export class CreateEventComponent implements OnInit {
       maxTicketCount: [null, [Validators.required, Validators.min(1)]],
       description: [null, [Validators.required, Validators.minLength(1)]],
       isBuyingTicketsTurnedOff: [false, [Validators.required]],
+      eventType: 'CONCERT',
     });
   }
 
   onSubmit(): void {
     if (this.eventForm.valid) {
-      this.eventService.createEvent(this.eventForm.value).subscribe();
-      console.log('user form', this.eventForm);
+      const formValue = this.eventForm.value;
+
+      const eventStartISO = new Date(
+        formValue.eventStartTimeMillis
+      ).toISOString();
+      const eventEndISO = new Date(formValue.eventEndTimeMillis).toISOString();
+
+      const payload = {
+        ...formValue,
+        eventStartTimeMillis: eventStartISO,
+        eventEndTimeMillis: eventEndISO,
+      };
+
+      this.eventService.createEvent(payload).subscribe({
+        next: () => {
+          this.snackBarService.showSuccessSnackBar('Utworzono wydarzenie');
+          this.eventForm.reset({
+            isBuyingTicketsTurnedOff: false,
+            eventType: 'CONCERT',
+          });
+        },
+        error: (err) => {
+          console.error('Błąd podczas tworzenia wydarzenia', err);
+          this.snackBarService.showErrorSnackBar(
+            'Błąd podczas tworzenia wydarzenia'
+          );
+        },
+      });
     } else {
       console.log('Formularz zawiera błędy');
     }
