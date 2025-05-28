@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>
+  {{ isEditMode ? "Edytuj wydarzenie" : "Utwórz wydarzenie" }}
+</h2>
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+  <label>Nazwa wydarzenia:</label>
+  <input formControlName="name" type="text" />
+  <div
+    *ngIf="
+      eventForm.controls['name'].invalid && eventForm.controls['name'].touched
+    "
+  >
+    Nazwa jest wymagana (minimum 3 znaki).
+  </div>
+
+  <label>Data rozpoczęcia:</label>
+  <input formControlName="eventStartTimeMillis" type="datetime-local" />
+  <div
+    *ngIf="
+      eventForm.controls['eventStartTimeMillis'].invalid &&
+      eventForm.controls['eventStartTimeMillis'].touched
+    "
+  >
+    Data rozpoczęcia jest wymagana.
+  </div>
+
+  <label>Data zakończenia:</label>
+  <input formControlName="eventEndTimeMillis" type="datetime-local" />
+  <div
+    *ngIf="
+      eventForm.controls['eventEndTimeMillis'].invalid &&
+      eventForm.controls['eventEndTimeMillis'].touched
+    "
+  >
+    Data zakończenia jest wymagana.
+  </div>
+
+  <label>Miejsce:</label>
+  <input formControlName="location" type="text" />
+  <div
+    *ngIf="
+      eventForm.controls['location'].invalid &&
+      eventForm.controls['location'].touched
+    "
+  >
+    Miejsce wydarzenia jest wymagane.
+  </div>
+
+  <label>Cena biletu:</label>
+  <input formControlName="ticketPrice" type="number" step="0.01" />
+  <div
+    *ngIf="
+      eventForm.controls['ticketPrice'].invalid &&
+      eventForm.controls['ticketPrice'].touched
+    "
+  >
+    Cena jest wymagana i nie może być mniejsza niż 0.
+  </div>
+
+  <label>Liczba biletów:</label>
+  <input formControlName="maxTicketCount" type="number" />
+  <div
+    *ngIf="
+      eventForm.controls['maxTicketCount'].invalid &&
+      eventForm.controls['maxTicketCount'].touched
+    "
+  >
+    Liczba biletów jest wymagana i musi być większa lub równa 1.
+  </div>
+
+  <label>Opis:</label>
+  <textarea formControlName="description"></textarea>
+  <div
+    *ngIf="
+      eventForm.controls['description'].invalid &&
+      eventForm.controls['description'].touched
+    "
+  >
+    Opis jest wymagany.
+  </div>
+
+  <div class="form-group toggle-switch">
+    <label for="isBuyingTicketsTurnedOff">Wyłącz sprzedaż biletów:</label>
+    <label class="switch">
+      <input
+        id="isBuyingTicketsTurnedOff"
+        formControlName="isBuyingTicketsTurnedOff"
+        type="checkbox"
+      />
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div
+    *ngIf="
+      eventForm.controls['isBuyingTicketsTurnedOff'].invalid &&
+      eventForm.controls['isBuyingTicketsTurnedOff'].touched
+    "
+  >
+    Wartość jest wymagana.
+  </div>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()">Anuluj</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="eventForm.invalid"
+    >
+      Zapisz zmiany
+    </button>
+  </mat-dialog-actions>
+</form>
