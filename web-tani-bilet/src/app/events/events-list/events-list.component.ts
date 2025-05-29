@@ -3,12 +3,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DataGridComponent, TableAction, TABLE_ACTION_KEY } from '../../shared/components/data-grid/data-grid.component';
 import { ListViewComponent } from '../../shared/components/list-view/list-view.component';
 import { TableColumnNames, ChangedTableColumnNames } from '../../shared/models/tableColumn.type';
-import { EventControllerService } from '@api/api/eventController.service';
-import { filter, map, Observable, of } from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, Observable, of} from 'rxjs';
 import { EventDto } from '@api/model/eventDto';
 import { AuthService } from '../../shared/services/security/auth.service';
 import { TicketPurchaseOptionsModalComponent } from '../../tickets/ticket-purchase-options-modal/ticket-purchase-options-modal.component';
 import { TicketPurchaseModalComponent } from '../../tickets/ticket-purchase-modal/ticket-purchase-modal.component';
+import {EventControllerService} from '../../apiv2';
 @Component({
   selector: 'app-events-list',
   templateUrl: './events-list.component.html',
@@ -31,13 +31,16 @@ export class EventsListComponent implements OnInit, OnChanges{
 
   data$: Observable<EventDto[] | undefined> = of([]);
 
-  constructor( 
-    private matDialog: MatDialog, 
+  constructor(
+    private matDialog: MatDialog,
     private _eventService: EventControllerService,
     private _authService: AuthService) { }
 
   ngOnInit(): void {
-    this.data$ = this.getEvents();
+    this.data$ = this.getEvents().pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    );
     const pendingAction = localStorage.getItem('pendingAction');
 
     if (pendingAction === 'buy-ticket') {
@@ -53,13 +56,13 @@ export class EventsListComponent implements OnInit, OnChanges{
   }
 
   private getEvents(){
-    return this._eventService.getEvents({ pageSize: 100, pageNumber: 0 }).pipe(
+    return this._eventService.getEvents().pipe(
       map(data => {
         return this.searchQuery
-          ? data.content?.filter(event => event.name?.toLowerCase().includes(this.searchQuery.toLowerCase()))
-          : data.content;
+          ? data.filter(event => event.name?.toLowerCase().includes(this.searchQuery.toLowerCase()))
+          : data;
       })
-    );  
+    );
   }
 
   displayedColumns: TableColumnNames<EventDto> = ['name', 'eventStartTimeMillis', 'eventEndTimeMillis', 'location'];

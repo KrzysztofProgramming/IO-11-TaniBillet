@@ -83,6 +83,7 @@ export class ModalEditEventComponent implements OnInit {
         this.data?.isBuyingTicketsTurnedOff ?? false,
         [Validators.required],
       ],
+      eventType: 'CONCERT'
     });
   }
 
@@ -101,6 +102,7 @@ export class ModalEditEventComponent implements OnInit {
         formValue.eventStartTimeMillis
       ).toISOString(),
       eventEndTimeMillis: new Date(formValue.eventEndTimeMillis).toISOString(),
+      isBuyingTicketsTurnedOff: this.eventForm.controls['isBuyingTicketsTurnedOff'].value !== 'nie'
     };
 
     if (this.isEditMode && this.data?.id) {
