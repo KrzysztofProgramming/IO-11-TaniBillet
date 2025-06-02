@@ -1,56 +1,88 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { Component, inject } from '@angular/core';
+import { map, of } from 'rxjs';
+import {
+  DataGridComponent,
+  TABLE_ACTION_KEY,
+  TableAction,
+} from '../../shared/components/data-grid/data-grid.component';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../shared/services/security/auth.service';
+import {
+  Configuration,
+  GetTicketDto,
+  TicketControllerService,
+} from '../../apiv2';
+import { QrModuleComponentComponent } from '../tickets/qr-module-component/qr-module-component.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-transaction-history',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatSortModule],
+  imports: [CommonModule, DataGridComponent],
+  providers: [
+    {
+      provide: TicketControllerService,
+      useFactory: (httpClient: HttpClient, authService: AuthService) => {
+        const config = new Configuration({
+          accessToken: () => authService.token,
+        });
+        return new TicketControllerService(httpClient, '', config);
+      },
+      deps: [HttpClient, AuthService],
+    },
+  ],
   templateUrl: './transaction-history.component.html',
   styleUrl: './transaction-history.component.scss',
 })
 export class TransactionHistoryComponent {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  private ticketService = inject(TicketControllerService);
+  private matDialog = inject(MatDialog);
 
-  transactions = [
+  data$ = this.ticketService.getTicketsForUser().pipe(
+    map((res) => {
+      const now = new Date();
+      return (res ?? []).filter(
+        (ticket) => new Date(ticket.eventEndTime) < now
+      );
+    })
+  );
+  displayedColumns: string[] = [
+    'id',
+    'seat',
+    'boughtPrice',
+    'eventId',
+    'qrCodeId',
+  ];
+
+  columnHeaders = {
+    id: 'ID',
+    seat: 'Miejsce',
+    boughtPrice: 'Cena',
+    eventId: 'ID wydarzenia',
+    qrCodeId: 'Kod QR',
+  };
+
+  rowActions: TableAction<GetTicketDto>[] = [
     {
-      id: 1,
-      date: '2023-05-01',
-      amount: 100,
-      description: 'Zakup biletu na koncert',
-      place: 'Warszawa',
-    },
-    {
-      id: 2,
-      date: '2023-05-03',
-      amount: 200,
-      description: 'Zakup biletu na teatr',
-      place: 'Kraków',
-    },
-    {
-      id: 3,
-      date: '2023-05-07',
-      amount: 50,
-      description: 'Zakup biletu na film',
-      place: 'Wrocław',
-    },
-    {
-      id: 4,
-      date: '2023-05-10',
-      amount: 300,
-      description: 'Zakup biletu na konferencję',
-      place: 'Poznań',
+      key: TABLE_ACTION_KEY.EDIT,
+      name: 'Wyświetl QR',
+      color: 'neutral',
+      callback: (ticket?: GetTicketDto) => {
+        if (!ticket) return;
+        this.openQrDialog(ticket);
+      },
+      availabilityFn: (ticket?: GetTicketDto) => !!ticket,
     },
   ];
 
-  displayedColumns: string[] = ['id', 'date', 'amount', 'description', 'place'];
-  dataSource = new MatTableDataSource(this.transactions);
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  openQrDialog(ticket: GetTicketDto) {
+    this.matDialog.open(QrModuleComponentComponent, {
+      data: {
+        id: ticket.id,
+        qrCodeId: ticket.qrCodeId,
+      },
+      width: '320px',
+    });
   }
 }

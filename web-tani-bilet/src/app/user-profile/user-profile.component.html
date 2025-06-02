@@ -2,27 +2,32 @@
   <mat-sidenav #sidenav mode="side" opened>
     <mat-nav-list>
       <mat-list-item (click)="showData()">Wyświetl dane</mat-list-item>
-      <mat-list-item (click)="editData()">Zmień dane</mat-list-item>
       <mat-list-item (click)="viewTransactionHistory()"
         >Historia transakcji</mat-list-item
       >
       <mat-list-item (click)="viewActiveTickets()"
         >Aktywne bilety</mat-list-item
       >
-      <mat-list-item (click)="deleteAccount()">Usuń konto</mat-list-item>
-      <mat-list-item (click)="requestRefund()">Poproś o zwrot</mat-list-item>
+      <!-- <mat-list-item (click)="requestRefund()">Poproś o zwrot</mat-list-item> -->
+      <ng-container *ngIf="isEventCreator">
+        <mat-list-item (click)="createEvent()">Stwórz wydarzenie</mat-list-item>
+        <mat-list-item (click)="eventList()">Moje wydarzenia</mat-list-item>
+      </ng-container>
     </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
     <div class="content">
-      <!-- <router-outlet></router-outlet> -->
       <app-show-data *ngIf="activeComponent === 'showData'"></app-show-data>
       <app-change-data *ngIf="activeComponent === 'editData'"></app-change-data>
       <app-transaction-history
         *ngIf="activeComponent === 'transactionHistory'"
       ></app-transaction-history>
       <app-tickets *ngIf="activeComponent === 'activeTickets'"></app-tickets>
+      <app-create-event
+        *ngIf="activeComponent === 'createEvent'"
+      ></app-create-event>
+      <app-event-grid *ngIf="activeComponent === 'eventList'"></app-event-grid>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -5,6 +5,11 @@
 cd ./tools & docker compose up
 ```
 2. Run server application from intellij: `io.tanibilet.server.MainServerApplication`, remember to setup env variable $SMTP_PASSWORD
+3. Setting variable above will make the application able to sent emails, but to make keycloak able to send email you need to paste secret value in keycloak UI
+- Go to keycloak admin console,
+- Login as a super-user using `admin`, `admin` credentials and go to realm `tani-bilet`
+- Select `realm-setting`, then `email` tab
+- At the bottom paste secret value to `password`. Remember to click `save` button after that.
 4. To use API you need JWT token from keycloak, you can get it using OAuth2 flow:
 ```
 Grant Type: Authorization Code

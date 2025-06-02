@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,10 @@ import { TicketsComponent } from './tickets/tickets.component';
 import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { CreateEventComponent } from './create-event/create-event.component';
+import { EventsListComponent } from '../events/events-list/events-list.component';
+import { EventGridComponent } from './event-grid/event-grid.component';
+import { AuthService } from '../shared/services/security/auth.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,18 +24,35 @@ import { RouterOutlet } from '@angular/router';
     MatIconModule,
     ShowDataComponent,
     ChangeDataComponent,
-    SupportComponent,
     TicketsComponent,
-    TransactionHistoryComponent
+    TransactionHistoryComponent,
+    CreateEventComponent,
+    EventGridComponent,
   ],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss',
 })
-export class UserProfileComponent {
-  activeComponent: string = 'showData';
+export class UserProfileComponent implements OnInit {
+  private authService = inject(AuthService);
+
+  get isEventCreator(): boolean {
+    return this.authService.hasRole('event_creator');
+  }
+
+  ngOnInit(): void {
+    this.authService.hasRole('event_creator');
+  }
+
+  activeComponent: string = 'activeTickets';
 
   showData() {
-    this.activeComponent = 'showData';
+    const redirectUrl =
+      'http://localhost:8080/auth/realms/tani-bilet/account' +
+      '?referrer=tani-bilet-app' +
+      '&referrer_uri=' +
+      encodeURIComponent('http://localhost:4200');
+
+    window.location.href = redirectUrl;
   }
 
   editData() {
@@ -52,5 +73,12 @@ export class UserProfileComponent {
 
   requestRefund() {
     this.activeComponent = 'requestRefund';
+  }
+
+  createEvent() {
+    this.activeComponent = 'createEvent';
+  }
+  eventList() {
+    this.activeComponent = 'eventList';
   }
 }
