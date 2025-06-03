@@ -222,4 +222,140 @@ public class EventIntegrationTest {
         verify(eventRepository, times(1)).findById(1L);
     }
 
+    @Test
+    void testUpdateEventSuccessfully()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+
+        EventEntity updatedEventEntity = new EventEntity(
+                null,
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                user.userId(),
+                "Updated test description",
+                false,
+                EventType.CONCERT,
+                new HashSet<>()
+        );
+
+
+        EventDto expectedDto = EventDto.fromEventEntity(updatedEventEntity);
+
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(eventRepository.save(any(EventEntity.class))).thenReturn(updatedEventEntity);
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.OK, updatedEvent.getStatusCode());
+        assertNotNull(updatedEvent.getBody());
+        assertEquals(expectedDto, updatedEvent.getBody());
+    }
+
+    @Test
+    void testUpdateNonExistentEvent()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.empty());
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.BAD_REQUEST, updatedEvent.getStatusCode());
+    }
+
+    @Test
+    void testUpdateEventWithWrongEventDate()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(1),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.BAD_REQUEST, updatedEvent.getStatusCode());
+
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
+    }
+
+    @Test
+    void testUpdateEventWithWrongUser()
+    {
+        //Arrange
+        CreateEventDto updateDto = new CreateEventDto(
+                "Updated test",
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(3),
+                "Kraków",
+                69.0,
+                150,
+                "Updated test description",
+                false,
+                EventType.CONCERT
+        );
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_event_creator"));
+
+        UserPrincipal user2 = new UserPrincipal(
+                "2",
+                "test2@mail.com",
+                "TestUser2",
+                true,
+                "Gordon",
+                "Freeman",
+                authorities
+        );
+
+        //Act
+        ResponseEntity<EventDto> updatedEvent = eventController.updateEvent(user2, 1L, updateDto);
+
+        //Assert
+        assertEquals(HttpStatus.BAD_REQUEST, updatedEvent.getStatusCode());
+
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
+    }
 }
