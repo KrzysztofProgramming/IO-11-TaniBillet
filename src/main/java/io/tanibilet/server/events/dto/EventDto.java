@@ -35,7 +35,10 @@ public record EventDto(
     @PositiveOrZero
     Integer ticketsSoldCount,
     @NotNull
-    EventType eventType
+    EventType eventType,
+    @NotNull
+    @PositiveOrZero
+    Double ticketPrice
 ){
     public static EventDto fromEventEntity(final EventEntity entity) {
         return new EventDto(
@@ -49,7 +52,8 @@ public record EventDto(
                 entity.getOwnerUserId(),
                 entity.getMaxTicketCount(),
                 entity.getSoldTicketCount(),
-                entity.getEventType()
+                entity.getEventType(),
+                entity.getTicketPrice()
         );
     }
 }
