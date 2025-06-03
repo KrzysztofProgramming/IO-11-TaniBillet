@@ -1,12 +1,15 @@
-﻿package io.tanibilet.server.events;
+package io.tanibilet.server.events;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
+import io.tanibilet.server.events.dto.EventDto;
 import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.events.entities.EventType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -71,6 +74,41 @@ public class EventIntegrationTest {
                 EventType.CONCERT,
                 new HashSet<>()
         );
+    }
+
+    @Test
+    void testCreateEventSuccessfully()
+    {
+        //Arrange
+        Mockito.when(eventRepository.save(any(EventEntity.class))).thenReturn(eventEntity);
+        //Act
+        ResponseEntity<EventDto> event = eventController.createEvent(user, createEventDto);
+        //Assert
+        assertEquals(HttpStatus.OK, event.getStatusCode());
+    }
+
+    @Test
+    void testCreateEventWithWrongEventTime()
+    {
+        //Arrange
+        CreateEventDto createEventDtoWithWrongDate = new CreateEventDto(
+                "Test",
+                ZonedDateTime.now().plusDays(2),
+                ZonedDateTime.now().plusDays(1),
+                "Kraków",
+                50.0,
+                200,
+                "Test description",
+                false,
+                EventType.CONCERT
+        );
+
+        //Act
+        ResponseEntity<EventDto> event = eventController.createEvent(user, createEventDtoWithWrongDate);
+
+        //Assert
+        assertEquals(HttpStatus.BAD_REQUEST, event.getStatusCode());
+        verify(eventRepository, times(0)).save(any(EventEntity.class));
     }
 
 }
