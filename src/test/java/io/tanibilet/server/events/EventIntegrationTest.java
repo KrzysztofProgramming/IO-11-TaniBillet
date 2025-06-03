@@ -358,4 +358,67 @@ public class EventIntegrationTest {
 
         verify(eventRepository, times(0)).save(any(EventEntity.class));
     }
+
+    @Test
+    void testDeleteEventSuccessfully()
+    {
+        //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(eventRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(eventRepository).deleteById(1L);
+
+        //Act
+        ResponseEntity<?> ent = eventController.deleteEvent(user, 1L);
+
+        //Assert
+        assertEquals(HttpStatus.OK, ent.getStatusCode());
+        assertNull(ent.getBody());
+
+        verify(eventRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteNonExistentEvent()
+    {
+        //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.empty());
+
+        //Act
+        ResponseEntity<?> ent = eventController.deleteEvent(user, 1L);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ent.getStatusCode());
+
+        verify(eventRepository, times(0)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteEventWithWrongUser()
+    {
+        //Arrange
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_event_creator"));
+
+        UserPrincipal user2 = new UserPrincipal(
+                "2",
+                "test2@mail.com",
+                "TestUser2",
+                true,
+                "Gordon",
+                "Freeman",
+                authorities
+        );
+
+        //Act
+        ResponseEntity<?> ent = eventController.deleteEvent(user2, 1L);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ent.getStatusCode());
+
+        verify(eventRepository, times(0)).deleteById(1L);
+    }
 }
