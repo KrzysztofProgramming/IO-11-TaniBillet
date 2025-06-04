@@ -45,6 +45,8 @@ public class EventEntity {
         this.setEventStartTimeMillis(updateDto.eventStartTimeMillis());
         this.setEventEndTimeMillis(updateDto.eventEndTimeMillis());
         this.setLocation(updateDto.location());
+        this.setTicketPrice(updateDto.ticketPrice());
+        this.setMaxTicketCount(updateDto.maxTicketCount());
         this.setDescription(updateDto.description());
         this.setIsBuyingTicketsTurnedOff(updateDto.isBuyingTicketsTurnedOff());
         this.setEventType(updateDto.eventType());
