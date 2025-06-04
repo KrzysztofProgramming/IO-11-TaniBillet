@@ -6,6 +6,7 @@ import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.mailing.MailService;
 import io.tanibilet.server.tickets.dto.GetTicketDto;
+import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.entities.TicketEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ public class TicketIntegrationTest {
 
     private UserPrincipal user;
     private TicketEntity ticketEntity;
+    private EventEntity eventEntity;
 
     @BeforeEach
     void SetUp() {
@@ -51,7 +53,7 @@ public class TicketIntegrationTest {
         );
         UUID uuid = new UUID(1000L, 500L);
 
-        EventEntity eventEntity = new EventEntity(
+        eventEntity = new EventEntity(
                 null,
                 "Test",
                 ZonedDateTime.now().plusDays(1),
@@ -117,6 +119,59 @@ public class TicketIntegrationTest {
         assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
     }
 
+    @Test
+    void testOrderTicketSuccessfully()
+    {
+        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
 
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(ticketRepository.countByEventId(1L)).thenReturn(0L);
+        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(false);
+
+        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
+
+        //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+
+
+        //Assert
+        assertEquals(HttpStatus.OK, ticket.getStatusCode());
+        assertNotNull(ticket.getBody());
+        assertEquals(expectedTicketDto, ticket.getBody());
+    }
+
+    @Test
+    void testOrderTicketWhenAllTicketsBought()
+    {
+        //Arrange
+        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(ticketRepository.countByEventId(1L)).thenReturn(201L);
+
+        //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
+    }
+
+    @Test
+    void testOrderTicketWhenSeatIsOccupied()
+    {
+        //Arrange
+        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
+        when(ticketRepository.countByEventId(1L)).thenReturn(0L);
+        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(true);
+
+        //Act
+        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+
+        //Assert
+        assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
+    }
 
 }
