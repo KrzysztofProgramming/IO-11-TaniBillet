@@ -78,6 +78,22 @@
     Opis jest wymagany.
   </div>
 
+  <label for="eventType">Typ wydarzenia:</label>
+  <select id="eventType" formControlName="eventType">
+    <option value="" disabled selected>Wybierz typ wydarzenia</option>
+    <option *ngFor="let type of eventTypes" [value]="type.value">
+      {{ type.label }}
+    </option>
+  </select>
+  <div
+    *ngIf="
+      eventForm.controls['eventType'].invalid &&
+      eventForm.controls['eventType'].touched
+    "
+  >
+    Typ wydarzenia jest wymagany.
+  </div>
+
   <div class="form-group toggle-switch">
     <label for="isBuyingTicketsTurnedOff">Wyłącz sprzedaż biletów:</label>
     <label class="switch">
