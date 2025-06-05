@@ -54,7 +54,7 @@ public class TicketIntegrationTest {
         UUID uuid = new UUID(1000L, 500L);
 
         eventEntity = new EventEntity(
-                null,
+                1L,
                 "Test",
                 ZonedDateTime.now().plusDays(1),
                 ZonedDateTime.now().plusDays(2),
