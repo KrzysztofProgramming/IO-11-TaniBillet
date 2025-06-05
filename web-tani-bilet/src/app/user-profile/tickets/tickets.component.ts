@@ -13,11 +13,13 @@ import { HttpClient } from '@angular/common/http';
 import { QRCodeModule } from 'angularx-qrcode';
 import { MatDialog } from '@angular/material/dialog';
 import { QrModuleComponentComponent } from './qr-module-component/qr-module-component.component';
+import { ChangedTableColumnNames, TableColumnNames } from '../../shared/models/tableColumn.type';
+import { ListViewComponent } from '../../shared/components/list-view/list-view.component';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [CommonModule, DataGridComponent, QRCodeModule],
+  imports: [CommonModule, DataGridComponent, QRCodeModule, ListViewComponent],
   providers: [
     {
       provide: TicketControllerService,
@@ -46,7 +48,7 @@ export class TicketsComponent {
     })
   );
 
-  displayedColumns: string[] = [
+  displayedColumns: TableColumnNames<GetTicketDto> = [
     'id',
     'seat',
     'boughtPrice',
@@ -54,7 +56,7 @@ export class TicketsComponent {
     'qrCodeId',
   ];
 
-  columnHeaders = {
+  columnHeaders: ChangedTableColumnNames<GetTicketDto> = {
     id: 'ID',
     seat: 'Miejsce',
     boughtPrice: 'Cena',

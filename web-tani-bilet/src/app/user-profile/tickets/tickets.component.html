@@ -1,16 +1,19 @@
-<div class="active-tickets" *ngIf="data$ | async as tickets">
-  <h2>Aktywne bilety</h2>
+<!-- <div class="active-tickets" *ngIf="data$ | async as tickets"> -->
+  <!-- <h2>Aktywne bilety</h2> -->
 
-  <ng-container *ngIf="tickets.length > 0; else noTickets">
-    <app-data-grid
-      [data$]="data$"
-      [displayedColumns]="displayedColumns"
-      [changedColumnHeaderNames]="columnHeaders"
-      [rowButtonAction]="rowActions"
-    ></app-data-grid>
-  </ng-container>
+  <!-- <ng-container *ngIf="tickets.length > 0; else noTickets"> -->
+    <app-list-view title="Aktywne bilety">
+      <app-data-grid
+        [data$]="data$"
+        [displayedColumns]="displayedColumns"
+        [changedColumnHeaderNames]="columnHeaders"
+        [rowButtonAction]="rowActions"
+      ></app-data-grid>
+    </app-list-view>
+    
+  <!-- </ng-container> -->
 
-  <ng-template #noTickets>
+  <!-- <ng-template #noTickets>
     <h3>Brak aktywnych biletów</h3>
-  </ng-template>
-</div>
+  </ng-template> -->
+<!-- </div> -->

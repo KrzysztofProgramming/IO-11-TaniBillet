@@ -1,11 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule, formatDate } from '@angular/common';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
-import { catchError, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { LoadingComponent } from '../loading/loading.component';
 import { LoadingService } from '../../services/loading/loading.service';
+import { KeyOfUnion } from '../../models/tableColumn.type';
 
 export interface TableAction<T> {
   key: TABLE_ACTION_KEY;
@@ -22,6 +23,15 @@ export enum TABLE_ACTION_KEY {
   DELETE = 'DELETE'
 }
 
+export enum ColumnTypeEnum {
+  DATE = 'DATE',
+  BOOLEAN = 'BOOLEAN'
+}
+
+export type TableColumnSettings = { [key: string]: ColumnTypeEnum }
+
+export type ChangesHeaderNames<T> = Partial<Record<KeyOfUnion<T>, string>>;
+
 @Component({
   selector: 'app-data-grid',
   templateUrl: './data-grid.component.html',
@@ -36,33 +46,90 @@ export enum TABLE_ACTION_KEY {
   ],
   providers: [LoadingService]
 })
-export class DataGridComponent<T> implements OnInit{
+export class DataGridComponent<T> implements OnInit, OnChanges{
 
   @Input()
   displayedColumns: string[] = [];
 
-  @Input()
-  data$!: Observable<T[] | undefined>;
+  // @Input() set data(value: T[] | undefined){
+  //   this.visibleData = value;
+  //   this.originalData = value;
+  // };
 
   @Input()
-  changedColumnHeaderNames: Record<string, any> = {};
+  data$: Observable<T[]> = of([]);
+
+  @Input()
+  changedColumnHeaderNames: { [key: string]: string } = {};
+
+  @Input()
+  displayedColumnSettings: { [key: string]: ColumnTypeEnum } = {};
 
   @Input()
   rowButtonAction!: TableAction<T>[];
 
+  @Input()
+  searchQuery!: string;
+
+  @Input()
+  searchKey!: KeyOfUnion<T>;
+
   selectedRow!: T;
-
+  private originalData: T[] | undefined;
+  visibleData: T[] | undefined;
   columnsToDisplay: string[] = [];
-  dataModel$!: Observable<T[]>;
+  private dataSourceRefreshTrigger$ = new BehaviorSubject(true);
 
-  data: T[] = []
+  readonly ColumnTypeEnum = ColumnTypeEnum;
 
   constructor(private _loadingService: LoadingService){}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['searchQuery'] && !changes['searchQuery'].firstChange){
+      this.visibleData = this.searchQuery ? 
+        this.originalData?.filter(el => el[this.searchKey]?.toString().toLowerCase().includes(this.searchQuery.toLowerCase())) :
+        this.originalData;
+    }
+  }
+
 
   ngOnInit(): void {
-    this.columnsToDisplay = !this.rowButtonAction.length ? this.displayedColumns : ['select', ...this.displayedColumns];
+    // this.data$ = this.dataSourceRefreshTrigger$.pipe(
+    //   switchMap(el => {
+    //     return this.data$?.pipe(
+    //       this._loadingService.showLoaderUntilCompleted(),
+    //       tap(data => {
+    //         this.originalData = data;
+    //         this.visibleData = data;
+    //       })
+    //     )
+    //   })
+        
+    // );
 
+    this.data$ = this.data$?.pipe(
+          this._loadingService.showLoaderUntilCompleted(),
+          tap(data => {
+            this.originalData = data;
+            this.visibleData = data;
+          })
+        )
+
+    // setTimeout(()=>this.refresh(),5000)
+
+    this.columnsToDisplay = !this.rowButtonAction.length ? this.displayedColumns : ['select', ...this.displayedColumns];
+  }
+
+  refresh(){
+    this.dataSourceRefreshTrigger$.next(true);
+  }
+
+  formatDate(value: Date){
+    return formatDate(
+      value,
+      'd MMM yyyy HH:mm',
+      'pl'
+    )
   }
 
   rowClicked(item: T){
@@ -75,5 +142,26 @@ export class DataGridComponent<T> implements OnInit{
       }
       return false;
   }
+
+//   applyFiltering(): void {
+//   this.dataModel$ = this.data$.pipe(
+//     map((data: T[] | undefined) => {
+//       if (!data) return [];
+
+//       const query = this.searchQuery?.trim().toLowerCase() || '';
+//       const firstColumn = this.displayedColumns[0];
+
+//       if (!query) {
+//         return data;
+//       }
+
+//       return data.filter((item) => {
+//         const value = (item as any)[firstColumn];
+//         return value && value.toString().toLowerCase().includes(query);
+//       });
+//     }),
+//     catchError(() => of([]))
+//   );
+// }
 
 }
