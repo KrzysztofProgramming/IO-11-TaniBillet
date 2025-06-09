@@ -6,17 +6,18 @@ import jakarta.validation.constraints.Positive;
 
 public record OrderTicketUnauthenticatedDto(
         @NotNull
-        @Positive
-        Integer seat,
-        @NotNull
         Long eventId,
         @Email
         @NotNull
-        String email
+        String email,
+        @Positive
+        @NotNull
+        Integer ticketCount
 ) {
     public OrderTicketDto toOrderTicketDto() {
         return new OrderTicketDto(
-                eventId
+                eventId,
+                ticketCount
         );
     }
 }

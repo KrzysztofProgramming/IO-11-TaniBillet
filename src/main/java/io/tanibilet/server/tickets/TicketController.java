@@ -6,6 +6,7 @@ import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +34,24 @@ public class TicketController {
     }
 
     @PostMapping("/order")
-    ResponseEntity<GetTicketDto> orderTicket(@AuthenticationPrincipal UserPrincipal user, @Valid @RequestBody OrderTicketDto orderTicketDto) {
-        return ticketService.orderTicketForEvent(orderTicketDto, user)
+    ResponseEntity<List<GetTicketDto>> orderTicket(@AuthenticationPrincipal UserPrincipal user, @Valid @RequestBody OrderTicketDto orderTicketDto) {
+        val orderedTickets = ticketService.orderTicketForEvent(orderTicketDto, user)
+                .stream()
                 .map(GetTicketDto::fromTicketEntity)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .toList();
+
+        if(orderedTickets.isEmpty()) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(orderedTickets);
     }
 
     @PostMapping("/orderUnauthenticated")
-    ResponseEntity<GetTicketDto> orderTicket(@Valid @RequestBody OrderTicketUnauthenticatedDto orderTicketDto) {
-        return ticketService.orderTicketForEvent(orderTicketDto)
+    ResponseEntity<List<GetTicketDto>> orderTicket(@Valid @RequestBody OrderTicketUnauthenticatedDto orderTicketDto) {
+        val orderedTickets = ticketService.orderTicketForEvent(orderTicketDto)
+                .stream()
                 .map(GetTicketDto::fromTicketEntity)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .toList();
+
+        if(orderedTickets.isEmpty()) return ResponseEntity.notFound().build();
+        else return ResponseEntity.ok(orderedTickets);
     }
 }

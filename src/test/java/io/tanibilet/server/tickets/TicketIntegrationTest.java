@@ -119,16 +119,16 @@ public class TicketIntegrationTest {
     @Test
     void testOrderTicketSuccessfully()
     {
-        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
-        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
+        List<GetTicketDto> expectedTicketDto = List.of(GetTicketDto.fromTicketEntity(ticketEntity));
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
 
-        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
+        when(ticketRepository.saveAll(any(Iterable.class))).thenReturn(Collections.singletonList(ticketEntity));
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(user, orderTicketDto);
 
 
         //Assert
@@ -141,13 +141,13 @@ public class TicketIntegrationTest {
     void testOrderTicketWhenAllTicketsBought()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(201L);
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
@@ -157,13 +157,13 @@ public class TicketIntegrationTest {
     void testOrderTicketWhenSeatIsOccupied()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());

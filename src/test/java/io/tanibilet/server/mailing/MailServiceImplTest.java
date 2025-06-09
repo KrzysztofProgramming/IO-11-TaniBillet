@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ class MailServiceImplTest {
         String recipientEmail = "tani.biletio@gmail.com";
 
         // Act
-        mailService.sendTicketViaEmail(ticket, recipientEmail);
+        mailService.sendTicketViaEmail(List.of(ticket), recipientEmail);
 
         // Assert
         verify(mailSender, times(1)).send(mimeMessage);
@@ -63,7 +64,7 @@ class MailServiceImplTest {
                 .build();
 
         // Act
-        mailService.sendTicketViaEmail(ticket, user);
+        mailService.sendTicketViaEmail(List.of(ticket), user);
 
         // Assert
         verify(mailSender, times(1)).send(mimeMessage);
