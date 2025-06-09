@@ -1,6 +1,6 @@
 import { Component, Input, input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { DataGridComponent, TableAction, TABLE_ACTION_KEY } from '../../shared/components/data-grid/data-grid.component';
+import { DataGridComponent, TableAction, TABLE_ACTION_KEY, TableColumnSettings, ColumnTypeEnum } from '../../shared/components/data-grid/data-grid.component';
 import { ListViewComponent } from '../../shared/components/list-view/list-view.component';
 import { TableColumnNames, ChangedTableColumnNames } from '../../shared/models/tableColumn.type';
 import {debounceTime, distinctUntilChanged, filter, map, Observable, of} from 'rxjs';
@@ -9,6 +9,9 @@ import { AuthService } from '../../shared/services/security/auth.service';
 import { TicketPurchaseOptionsModalComponent } from '../../tickets/ticket-purchase-options-modal/ticket-purchase-options-modal.component';
 import { TicketPurchaseModalComponent } from '../../tickets/ticket-purchase-modal/ticket-purchase-modal.component';
 import {EventControllerService} from '../../apiv2';
+import { CommonModule, formatDate } from '@angular/common';
+import { LoadingService } from '../../shared/services/loading/loading.service';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 @Component({
   selector: 'app-events-list',
   templateUrl: './events-list.component.html',
@@ -17,52 +20,35 @@ import {EventControllerService} from '../../apiv2';
   imports: [
     DataGridComponent,
     ListViewComponent,
-    MatDialogModule
+    MatDialogModule,
+    CommonModule,
+    LoadingComponent
   ],
   providers: [
     EventControllerService,
-
+    LoadingService
   ]
 })
-export class EventsListComponent implements OnInit, OnChanges{
+export class EventsListComponent implements OnInit{
 
   @Input()
   searchQuery: string = '';
 
-  data$: Observable<EventDto[] | undefined> = of([]);
+  data$: Observable<EventDto[]> = of([]);
 
   constructor(
     private matDialog: MatDialog,
     private _eventService: EventControllerService,
+    private _loadingService: LoadingService,
     private _authService: AuthService) { }
 
   ngOnInit(): void {
-    this.data$ = this.getEvents().pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    );
+    this.data$ = this._eventService.getEvents();
     const pendingAction = localStorage.getItem('pendingAction');
 
     if (pendingAction === 'buy-ticket') {
       localStorage.removeItem('pendingAction');
-      // this.showTicketPurchaseModal(true);
     }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if(changes['searchQuery']){
-      this.data$ = this.getEvents();
-    }
-  }
-
-  private getEvents(){
-    return this._eventService.getEvents().pipe(
-      map(data => {
-        return this.searchQuery
-          ? data.filter(event => event.name?.toLowerCase().includes(this.searchQuery.toLowerCase()))
-          : data;
-      })
-    );
   }
 
   displayedColumns: TableColumnNames<EventDto> = ['name', 'eventStartTimeMillis', 'eventEndTimeMillis', 'location'];
@@ -72,6 +58,11 @@ export class EventsListComponent implements OnInit, OnChanges{
     eventStartTimeMillis: 'Data rozpoczęcia wydarzenia',
     eventEndTimeMillis: 'Data zakończenia wydarzenia',
     location: 'Miejsce'
+  }
+
+  displayedColumnSettings: TableColumnSettings = {
+    'eventStartTimeMillis': ColumnTypeEnum.DATE,
+    'eventEndTimeMillis': ColumnTypeEnum.DATE
   }
 
   rowButtonAction: TableAction<EventDto>[] = [

@@ -1,5 +1,18 @@
 <app-modal-view [title]="'Kup bilet na ' + event.name" [actionButtons]="actionButtons">
     <form [formGroup]="formGroup">
+        <label>Liczba biletów:</label>
+        <input formControlName="ticketNumber" type="number" />
+        @if(formGroup.controls['ticketNumber'].invalid && formGroup.controls['ticketNumber'].touched){
+            <div>Liczba biletów jest wymagana i musi być większa lub równa 1.</div>
+        }
 
+        @if(!this.isLoggedIn){
+            <label>Email:</label>
+            <input formControlName="email" type="text" />
+            @if(formGroup.controls['email'].invalid && formGroup.controls['email'].touched){
+                <div>Brak pola email lub jest niepoprawne.</div>
+            }
+        }
+            
     </form>
 </app-modal-view>

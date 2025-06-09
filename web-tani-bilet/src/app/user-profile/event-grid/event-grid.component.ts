@@ -2,9 +2,11 @@ import { CommonModule, formatDate } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import {
+  ColumnTypeEnum,
   DataGridComponent,
   TABLE_ACTION_KEY,
   TableAction,
+  TableColumnSettings,
 } from '../../shared/components/data-grid/data-grid.component';
 import { HttpClient } from '@angular/common/http';
 import { Configuration } from '@api/configuration';
@@ -13,6 +15,8 @@ import { EventControllerService, EventDto } from '../../apiv2';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ModalEditEventComponent } from './modal-edit-event/modal-edit-event.component';
 import { SnackBarService } from '../../shared/services/snackbar.service';
+import { ChangedTableColumnNames, KeyOfUnion, TableColumnNames } from '../../shared/models/tableColumn.type';
+import { ListViewComponent } from '../../shared/components/list-view/list-view.component';
 
 @Component({
   selector: 'app-event-grid',
@@ -21,7 +25,7 @@ import { SnackBarService } from '../../shared/services/snackbar.service';
     CommonModule,
     DataGridComponent,
     MatDialogModule,
-    ModalEditEventComponent,
+    ListViewComponent
   ],
   providers: [
     {
@@ -42,11 +46,11 @@ export class EventGridComponent implements OnInit {
   private eventService = inject(EventControllerService);
   private matDialog = inject(MatDialog);
   private snackBarService = inject(SnackBarService);
-  displayedColumns: string[] = [
+  displayedColumns: TableColumnNames<EventDto> = [
     'id',
     'name',
-    'eventStartTimeMillisFormatted',
-    'eventEndTimeMillisFormatted',
+    'eventStartTimeMillis',
+    'eventEndTimeMillis',
     'location',
     'description',
     'isBuyingTicketsTurnedOff',
@@ -55,11 +59,11 @@ export class EventGridComponent implements OnInit {
     'eventType',
   ];
 
-  changedColumnHeaderNames: Record<string, string> = {
+  changedColumnHeaderNames: ChangedTableColumnNames<EventDto> = {
     id: 'ID',
     name: 'Nazwa',
-    eventStartTimeMillisFormatted: 'Start',
-    eventEndTimeMillisFormatted: 'Koniec',
+    eventStartTimeMillis: 'Start',
+    eventEndTimeMillis: 'Koniec',
     location: 'Miejsce',
     description: 'Opis',
     isBuyingTicketsTurnedOff: 'Sprzedaż wyłączona',
@@ -67,6 +71,12 @@ export class EventGridComponent implements OnInit {
     ticketsSoldCount: 'Sprzedane bilety',
     eventType: 'Typ wydarzenia',
   };
+
+  displayedColumnSettings: TableColumnSettings = {
+      'eventStartTimeMillis': ColumnTypeEnum.DATE,
+      'eventEndTimeMillis': ColumnTypeEnum.DATE,
+      'isBuyingTicketsTurnedOff': ColumnTypeEnum.BOOLEAN
+  }
 
   rowActions: TableAction<EventDto>[] = [
     {
@@ -91,31 +101,10 @@ export class EventGridComponent implements OnInit {
     },
   ];
 
-  data$: Observable<any[]> = new Observable<any[]>();
+  data$: Observable<EventDto[]> = this.loadEvents();
 
   ngOnInit(): void {
-    this.data$ = this.eventService.getEvents().pipe(
-      map((response) => {
-        if (!response) return [];
 
-        return response.map((event) => ({
-          ...event,
-          eventStartTimeMillisFormatted: formatDate(
-            event.eventStartTimeMillis,
-            'd MMM yyyy HH:mm',
-            'pl'
-          ),
-          eventEndTimeMillisFormatted: formatDate(
-            event.eventEndTimeMillis,
-            'd MMM yyyy HH:mm',
-            'pl'
-          ),
-          isBuyingTicketsTurnedOff: event.isBuyingTicketsTurnedOff
-            ? 'tak'
-            : 'nie',
-        }));
-      })
-    );
   }
 
   openEditDialog(event: EventDto) {
@@ -132,28 +121,7 @@ export class EventGridComponent implements OnInit {
   }
 
   private loadEvents() {
-    this.data$ = this.eventService.getEvents().pipe(
-      map((response) => {
-        if (!response) return [];
-
-        return response.map((event) => ({
-          ...event,
-          eventStartTimeMillisFormatted: formatDate(
-            event.eventStartTimeMillis,
-            'd MMM yyyy HH:mm',
-            'pl'
-          ),
-          eventEndTimeMillisFormatted: formatDate(
-            event.eventEndTimeMillis,
-            'd MMM yyyy HH:mm',
-            'pl'
-          ),
-          isBuyingTicketsTurnedOff: event.isBuyingTicketsTurnedOff
-            ? 'tak'
-            : 'nie',
-        }));
-      })
-    );
+    return this.eventService.getEvents();
   }
 
   editEvent(event: EventDto | undefined): void {
