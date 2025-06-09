@@ -12,12 +12,12 @@ public record OrderTicketUnauthenticatedDto(
         String email,
         @Positive
         @NotNull
-        Integer ticketCount
+        Integer ticketsCount
 ) {
     public OrderTicketDto toOrderTicketDto() {
         return new OrderTicketDto(
                 eventId,
-                ticketCount
+                ticketsCount
         );
     }
 }

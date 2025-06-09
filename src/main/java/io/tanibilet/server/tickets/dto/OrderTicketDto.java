@@ -8,5 +8,5 @@ public record OrderTicketDto(
         Long eventId,
         @Positive
         @NotNull
-        Integer ticketCount
+        Integer ticketsCount
 ){}

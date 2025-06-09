@@ -63,11 +63,11 @@ public class TicketService {
 
         long maxTicketCount = event.getMaxTicketCount();
         long ticketCount = ticketRepository.countByEventId(event.getId());
-        if (ticketCount + orderTicketDto.ticketCount() > maxTicketCount) return List.of();
+        if (ticketCount + orderTicketDto.ticketsCount() > maxTicketCount) return List.of();
         if (event.getIsBuyingTicketsTurnedOff()) return List.of();
 
         val tickets = ticketRepository.saveAll(
-                Stream.generate(() -> createTicketEntity(event, userId)).limit(orderTicketDto.ticketCount()).toList()
+                Stream.generate(() -> createTicketEntity(event, userId)).limit(orderTicketDto.ticketsCount()).toList()
         );
 
         mailSendingConsumer.accept(tickets);
