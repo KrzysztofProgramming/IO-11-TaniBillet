@@ -1,19 +1,18 @@
 package io.tanibilet.server.mailing;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.tickets.entities.TicketEntity;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import jakarta.mail.internet.MimeMessage;
 
 import java.io.ByteArrayOutputStream;
 

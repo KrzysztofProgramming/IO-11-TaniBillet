@@ -2,16 +2,14 @@ package io.tanibilet.server.mailing;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.tickets.entities.TicketEntity;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import jakarta.mail.internet.MimeMessage;
-
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class MailServiceImplTest {

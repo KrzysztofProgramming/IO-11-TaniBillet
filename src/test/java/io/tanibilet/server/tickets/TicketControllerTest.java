@@ -7,10 +7,8 @@ import io.tanibilet.server.tickets.dto.GetTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
 import io.tanibilet.server.tickets.entities.TicketEntity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,8 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TicketControllerTest {
 
