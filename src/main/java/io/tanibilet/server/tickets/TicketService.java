@@ -64,23 +64,17 @@ public class TicketService {
             if (ticketCount >= maxTicketCount) return Optional.empty();
             if(event.getIsBuyingTicketsTurnedOff()) return Optional.empty();
 
-            if(ticketRepository.existsByEventIdAndSeat(event.getId(), orderTicketDto.seat())){
-                // seat is already occupied
-                return Optional.empty();
-            }
-
-            val createdTicket = ticketRepository.save(createTicketEntity(orderTicketDto, event, userId));
+            val createdTicket = ticketRepository.save(createTicketEntity(event, userId));
             mailSendingConsumer.accept(createdTicket);
             return Optional.of(createdTicket);
         });
     }
 
-    private TicketEntity createTicketEntity(OrderTicketDto orderTicketDto, EventEntity eventEntity, Optional<String> userId) {
+    private TicketEntity createTicketEntity(EventEntity eventEntity, Optional<String> userId) {
         return new TicketEntity(
                 null,
                 UUID.randomUUID(),
                 eventEntity.getTicketPrice(),
-                orderTicketDto.seat(),
                 eventEntity,
                 userId.orElse(null)
         );

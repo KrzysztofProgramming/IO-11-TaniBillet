@@ -68,7 +68,6 @@ public class TicketControllerTest {
         ticketEntity.setId(1L);
         ticketEntity.setQrCodeId(uuid);
         ticketEntity.setBoughtPrice(50.0);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
         ticketEntity.setUserId(user.userId());
     }
@@ -120,7 +119,7 @@ public class TicketControllerTest {
     void testOrderTicketStatusOk()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
         when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.of(ticketEntity));
         GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
 
@@ -137,7 +136,7 @@ public class TicketControllerTest {
     void testOrderTicketStatusNotFound()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
         when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.empty());
 
         //Act

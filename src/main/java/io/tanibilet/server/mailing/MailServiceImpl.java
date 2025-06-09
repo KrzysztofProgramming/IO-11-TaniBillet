@@ -59,7 +59,6 @@ public class MailServiceImpl implements MailService {
 
     private String buildEmailContent(TicketEntity ticket) {
         return "<h1>Twój bilet</h1>" +
-                "<p>Miejsce: " + ticket.getSeat() + "</p>" +
                 "<p>Cena: " + ticket.getBoughtPrice() + " PLN</p>" +
                 "<p>Identyfikator QR: " + ticket.getQrCodeId() + "</p>";
     }

@@ -28,7 +28,6 @@ class MailServiceImplTest {
         TicketEntity ticket = TicketEntity.builder()
                 .qrCodeId(UUID.randomUUID())
                 .boughtPrice(50.0)
-                .seat(1)
                 .build();
 
         String recipientEmail = "tani.biletio@gmail.com";
@@ -63,7 +62,6 @@ class MailServiceImplTest {
         TicketEntity ticket = TicketEntity.builder()
                 .qrCodeId(UUID.randomUUID())
                 .boughtPrice(50.0)
-                .seat(1)
                 .build();
 
         // Act

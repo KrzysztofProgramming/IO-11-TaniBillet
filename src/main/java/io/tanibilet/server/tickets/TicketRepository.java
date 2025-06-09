@@ -15,7 +15,6 @@ import java.util.Set;
 @Repository
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     Optional<TicketEntity> findOneByIdAndUserId(Long id, String userId);
-    boolean existsByEventIdAndSeat(Long eventId, Integer seat);
     List<TicketEntity> findByUserId(String userId);
     long countByEventId(Long eventId);
 }

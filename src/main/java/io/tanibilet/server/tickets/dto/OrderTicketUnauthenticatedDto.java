@@ -16,7 +16,7 @@ public record OrderTicketUnauthenticatedDto(
 ) {
     public OrderTicketDto toOrderTicketDto() {
         return new OrderTicketDto(
-                seat, eventId
+                eventId
         );
     }
 }

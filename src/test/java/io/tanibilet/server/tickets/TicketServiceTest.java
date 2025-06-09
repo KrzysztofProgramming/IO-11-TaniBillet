@@ -50,7 +50,7 @@ public class TicketServiceTest {
     @Test
     void testOrderTicketForEventAuthenticated() {
         // Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L);
         EventEntity eventEntity = new EventEntity(
                 1L,
                 "Test Event",
@@ -67,11 +67,9 @@ public class TicketServiceTest {
         );
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
-        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(false);
 
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setId(1L);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
         when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
 
@@ -107,11 +105,9 @@ public class TicketServiceTest {
         );
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
-        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(false);
 
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setId(1L);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
         when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
 
