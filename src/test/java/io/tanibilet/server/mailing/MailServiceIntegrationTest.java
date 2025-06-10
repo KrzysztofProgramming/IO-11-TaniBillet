@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
@@ -19,14 +20,11 @@ class MailServiceIntegrationTest {
         TicketEntity ticket = TicketEntity.builder()
                 .qrCodeId(UUID.randomUUID())
                 .boughtPrice(50.0)
-                .seat(1)
                 .build();
 
         String recipientEmail = "tani.biletio@gmail.com";
 
         // Act
-        mailService.sendTicketViaEmail(ticket, recipientEmail);
-
-
+        mailService.sendTicketViaEmail(List.of(ticket), recipientEmail);
     }
 }

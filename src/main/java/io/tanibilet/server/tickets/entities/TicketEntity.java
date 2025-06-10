@@ -20,7 +20,6 @@ public class TicketEntity {
     private Long id;
     private UUID qrCodeId;
     private Double boughtPrice;
-    private Integer seat;
 
     @ManyToOne
     private EventEntity event;

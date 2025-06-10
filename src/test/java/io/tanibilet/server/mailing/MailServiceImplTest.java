@@ -2,16 +2,15 @@ package io.tanibilet.server.mailing;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.tickets.entities.TicketEntity;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import jakarta.mail.internet.MimeMessage;
-
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class MailServiceImplTest {
@@ -28,13 +27,12 @@ class MailServiceImplTest {
         TicketEntity ticket = TicketEntity.builder()
                 .qrCodeId(UUID.randomUUID())
                 .boughtPrice(50.0)
-                .seat(1)
                 .build();
 
         String recipientEmail = "tani.biletio@gmail.com";
 
         // Act
-        mailService.sendTicketViaEmail(ticket, recipientEmail);
+        mailService.sendTicketViaEmail(List.of(ticket), recipientEmail);
 
         // Assert
         verify(mailSender, times(1)).send(mimeMessage);
@@ -63,11 +61,10 @@ class MailServiceImplTest {
         TicketEntity ticket = TicketEntity.builder()
                 .qrCodeId(UUID.randomUUID())
                 .boughtPrice(50.0)
-                .seat(1)
                 .build();
 
         // Act
-        mailService.sendTicketViaEmail(ticket, user);
+        mailService.sendTicketViaEmail(List.of(ticket), user);
 
         // Assert
         verify(mailSender, times(1)).send(mimeMessage);

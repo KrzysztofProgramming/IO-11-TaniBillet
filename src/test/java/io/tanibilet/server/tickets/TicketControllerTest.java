@@ -7,10 +7,8 @@ import io.tanibilet.server.tickets.dto.GetTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
 import io.tanibilet.server.tickets.entities.TicketEntity;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,8 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TicketControllerTest {
 
@@ -68,7 +68,6 @@ public class TicketControllerTest {
         ticketEntity.setId(1L);
         ticketEntity.setQrCodeId(uuid);
         ticketEntity.setBoughtPrice(50.0);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
         ticketEntity.setUserId(user.userId());
     }
@@ -120,12 +119,12 @@ public class TicketControllerTest {
     void testOrderTicketStatusOk()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
-        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.of(ticketEntity));
-        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
+        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(List.of(ticketEntity));
+        List<GetTicketDto> expectedTicketDto = List.of(GetTicketDto.fromTicketEntity(ticketEntity));
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
         assertEquals(HttpStatus.OK, ticket.getStatusCode());
@@ -137,11 +136,11 @@ public class TicketControllerTest {
     void testOrderTicketStatusNotFound()
     {
         //Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
-        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(Optional.empty());
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
+        when(ticketService.orderTicketForEvent(orderTicketDto, user)).thenReturn(List.of());
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(user, orderTicketDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(user, orderTicketDto);
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());
@@ -152,12 +151,12 @@ public class TicketControllerTest {
     {
         //Arrange
         ticketEntity.setUserId(null);
-        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(12, 1L, "test@email.com");
-        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(Optional.of(ticketEntity));
-        GetTicketDto expectedTicketDto = GetTicketDto.fromTicketEntity(ticketEntity);
+        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto( 1L, "test@email.com", 1);
+        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(List.of(ticketEntity));
+        List<GetTicketDto> expectedTicketDto = List.of(GetTicketDto.fromTicketEntity(ticketEntity));
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
 
         //Assert
         assertEquals(HttpStatus.OK, ticket.getStatusCode());
@@ -169,11 +168,11 @@ public class TicketControllerTest {
     void testOrderUnauthenticatedTicketStatusNotFound()
     {
         //Arrange
-        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(12, 1L, "test@email.com");
-        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(Optional.empty());
+        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(1L, "test@email.com", 1);
+        when(ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto)).thenReturn(List.of());
 
         //Act
-        ResponseEntity<GetTicketDto> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
+        ResponseEntity<List<GetTicketDto>> ticket = ticketController.orderTicket(orderTicketUnauthenticatedDto);
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND, ticket.getStatusCode());

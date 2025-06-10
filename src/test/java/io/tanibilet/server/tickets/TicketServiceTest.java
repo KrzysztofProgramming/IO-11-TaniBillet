@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +52,7 @@ public class TicketServiceTest {
     @Test
     void testOrderTicketForEventAuthenticated() {
         // Arrange
-        OrderTicketDto orderTicketDto = new OrderTicketDto(12, 1L);
+        OrderTicketDto orderTicketDto = new OrderTicketDto(1L, 1);
         EventEntity eventEntity = new EventEntity(
                 1L,
                 "Test Event",
@@ -67,30 +69,28 @@ public class TicketServiceTest {
         );
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
-        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(false);
 
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setId(1L);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
-        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
+        when(ticketRepository.saveAll(any(Iterable.class))).thenReturn(Collections.singletonList(ticketEntity));
 
         UserPrincipal user = mock(UserPrincipal.class);
         when(user.userId()).thenReturn("testUserId");
 
         // Act
-        Optional<TicketEntity> result = ticketService.orderTicketForEvent(orderTicketDto, user);
+        List<TicketEntity> result = ticketService.orderTicketForEvent(orderTicketDto, user);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(ticketEntity, result.get());
-        verify(mailService, times(1)).sendTicketViaEmail(ticketEntity, user);
+        assertEquals(1, result.size());
+        assertEquals(ticketEntity, result.getFirst());
+        verify(mailService, times(1)).sendTicketViaEmail(List.of(ticketEntity), user);
     }
 
     @Test
     void testOrderTicketForEventUnauthenticated() {
         // Arrange
-        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(12, 1L, "test@email.com");
+        OrderTicketUnauthenticatedDto orderTicketUnauthenticatedDto = new OrderTicketUnauthenticatedDto(1L, "test@email.com", 1);
         EventEntity eventEntity = new EventEntity(
                 1L,
                 "Test Event",
@@ -107,20 +107,18 @@ public class TicketServiceTest {
         );
         when(eventRepository.findById(1L)).thenReturn(Optional.of(eventEntity));
         when(ticketRepository.countByEventId(1L)).thenReturn(0L);
-        when(ticketRepository.existsByEventIdAndSeat(1L, 12)).thenReturn(false);
 
         TicketEntity ticketEntity = new TicketEntity();
         ticketEntity.setId(1L);
-        ticketEntity.setSeat(12);
         ticketEntity.setEvent(eventEntity);
-        when(ticketRepository.save(any(TicketEntity.class))).thenReturn(ticketEntity);
+        when(ticketRepository.saveAll(any(Iterable.class))).thenReturn(Collections.singletonList(ticketEntity));
 
         // Act
-        Optional<TicketEntity> result = ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto);
+        List<TicketEntity> result = ticketService.orderTicketForEvent(orderTicketUnauthenticatedDto);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(ticketEntity, result.get());
-        verify(mailService, times(1)).sendTicketViaEmail(ticketEntity, "test@email.com");
+        assertEquals(1, result.size());
+        assertEquals(ticketEntity, result.getFirst());
+        verify(mailService, times(1)).sendTicketViaEmail(List.of(ticketEntity), "test@email.com");
     }
 }

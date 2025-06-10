@@ -1,8 +1,12 @@
 <app-list-view [title]="'Lista wydarzeń'">
     <app-data-grid
         [changedColumnHeaderNames]="changedColumnHeaderNames"
-        [data$]="data$!"
+        [data$]="data$"
         [displayedColumns]="displayedColumns"
         [rowButtonAction]="rowButtonAction"
+        [searchQuery]="searchQuery"
+        [displayedColumnSettings]="displayedColumnSettings"
+        [searchKey]="'name'"
     ></app-data-grid>
 </app-list-view>
+<app-loading></app-loading>

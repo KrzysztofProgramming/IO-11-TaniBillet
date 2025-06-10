@@ -83,9 +83,17 @@ export class ModalEditEventComponent implements OnInit {
         this.data?.isBuyingTicketsTurnedOff ?? false,
         [Validators.required],
       ],
-      eventType: 'CONCERT'
+      eventType: [this.data?.eventType ?? null, [Validators.required]],
     });
   }
+
+  eventTypes = [
+    { value: 'CONCERT', label: 'Koncert' },
+    { value: 'CONFERENCE', label: 'Konferencja' },
+    { value: 'WORKSHOP', label: 'Warsztat' },
+    { value: 'MEETUP', label: 'Spotkanie' },
+    { value: 'FESTIVAL', label: 'Festiwal' },
+  ];
 
   private formatToDatetimeLocal(date: string | Date): string {
     const d = typeof date === 'string' ? new Date(date) : date;
@@ -102,7 +110,8 @@ export class ModalEditEventComponent implements OnInit {
         formValue.eventStartTimeMillis
       ).toISOString(),
       eventEndTimeMillis: new Date(formValue.eventEndTimeMillis).toISOString(),
-      isBuyingTicketsTurnedOff: this.eventForm.controls['isBuyingTicketsTurnedOff'].value !== 'nie'
+      isBuyingTicketsTurnedOff:
+        this.eventForm.controls['isBuyingTicketsTurnedOff'].value !== 'nie',
     };
 
     if (this.isEditMode && this.data?.id) {

@@ -1,10 +1,14 @@
 <div class="active-tickets">
-  <h2>Moje wydarzenia</h2>
-  <app-data-grid
-    [displayedColumns]="displayedColumns"
-    [changedColumnHeaderNames]="changedColumnHeaderNames"
-    [rowButtonAction]="rowActions"
-    [data$]="data$"
-  >
-  </app-data-grid>
+  <!-- <h2>Moje wydarzenia</h2> -->
+  <app-list-view [title]="'Moje wydarzenia'">
+    <app-data-grid
+      [displayedColumns]="displayedColumns"
+      [changedColumnHeaderNames]="changedColumnHeaderNames"
+      [rowButtonAction]="rowActions"
+      [data$]="data$"
+      [displayedColumnSettings]="displayedColumnSettings"
+    >
+    </app-data-grid>
+  </app-list-view>
+  
 </div>

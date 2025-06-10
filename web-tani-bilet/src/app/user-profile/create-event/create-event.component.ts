@@ -10,6 +10,8 @@ import { AuthService } from '../../shared/services/security/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Configuration, EventControllerService } from '../../apiv2';
 import { SnackBarService } from '../../shared/services/snackbar.service';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatOption } from '@angular/material/core';
 
 @Component({
   selector: 'app-create-event',
@@ -35,6 +37,14 @@ export class CreateEventComponent implements OnInit {
   private snackBarService = inject(SnackBarService);
   eventForm!: FormGroup;
 
+  eventTypes = [
+    { value: 'CONCERT', label: 'Koncert' },
+    { value: 'CONFERENCE', label: 'Konferencja' },
+    { value: 'WORKSHOP', label: 'Warsztat' },
+    { value: 'MEETUP', label: 'Spotkanie' },
+    { value: 'FESTIVAL', label: 'Festiwal' },
+  ];
+
   private fb = inject(FormBuilder);
 
   ngOnInit(): void {
@@ -47,7 +57,7 @@ export class CreateEventComponent implements OnInit {
       maxTicketCount: [null, [Validators.required, Validators.min(1)]],
       description: [null, [Validators.required, Validators.minLength(1)]],
       isBuyingTicketsTurnedOff: [false, [Validators.required]],
-      eventType: 'CONCERT',
+      eventType: [null, Validators.required],
     });
   }
 

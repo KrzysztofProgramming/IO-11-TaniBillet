@@ -2,8 +2,8 @@ package io.tanibilet.server.events;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.dto.CreateEventDto;
-import io.tanibilet.server.events.entities.EventType;
 import io.tanibilet.server.events.entities.EventEntity;
+import io.tanibilet.server.events.entities.EventType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,7 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

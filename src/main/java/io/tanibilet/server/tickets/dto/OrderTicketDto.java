@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Positive;
 
 public record OrderTicketDto(
         @NotNull
+        Long eventId,
         @Positive
-        Integer seat,
         @NotNull
-        Long eventId
+        Integer ticketsCount
 ){}

@@ -15,11 +15,13 @@ import {
 } from '../../apiv2';
 import { QrModuleComponentComponent } from '../tickets/qr-module-component/qr-module-component.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ChangedTableColumnNames, TableColumnNames } from '../../shared/models/tableColumn.type';
+import { ListViewComponent } from "../../shared/components/list-view/list-view.component";
 
 @Component({
   selector: 'app-transaction-history',
   standalone: true,
-  imports: [CommonModule, DataGridComponent],
+  imports: [CommonModule, DataGridComponent, ListViewComponent],
   providers: [
     {
       provide: TicketControllerService,
@@ -47,7 +49,7 @@ export class TransactionHistoryComponent {
       );
     })
   );
-  displayedColumns: string[] = [
+  displayedColumns: TableColumnNames<GetTicketDto> = [
     'id',
     'seat',
     'boughtPrice',
@@ -55,7 +57,7 @@ export class TransactionHistoryComponent {
     'qrCodeId',
   ];
 
-  columnHeaders = {
+  columnHeaders: ChangedTableColumnNames<GetTicketDto> = {
     id: 'ID',
     seat: 'Miejsce',
     boughtPrice: 'Cena',

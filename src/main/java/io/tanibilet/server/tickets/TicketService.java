@@ -2,15 +2,13 @@ package io.tanibilet.server.tickets;
 
 import io.tanibilet.server.auth.UserPrincipal;
 import io.tanibilet.server.events.EventRepository;
+import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.mailing.MailService;
 import io.tanibilet.server.tickets.dto.OrderTicketDto;
 import io.tanibilet.server.tickets.dto.OrderTicketUnauthenticatedDto;
-import io.tanibilet.server.events.entities.EventEntity;
 import io.tanibilet.server.tickets.entities.TicketEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -40,47 +39,46 @@ public class TicketService {
         return ticketRepository.findOneByIdAndUserId(ticketId, userId);
     }
 
-    public Optional<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, UserPrincipal user) {
+    public List<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, UserPrincipal user) {
         return orderTicketForEvent(
                 orderTicketDto,
-                ticketEntity -> mailService.sendTicketViaEmail(ticketEntity, user),
+                ticketEntities -> mailService.sendTicketViaEmail(ticketEntities, user),
                 Optional.of(user.userId())
         );
     }
 
-    public Optional<TicketEntity> orderTicketForEvent(OrderTicketUnauthenticatedDto orderTicketDto) {
+    public List<TicketEntity> orderTicketForEvent(OrderTicketUnauthenticatedDto orderTicketDto) {
         return orderTicketForEvent(
                 orderTicketDto.toOrderTicketDto(),
-                ticketEntity -> mailService.sendTicketViaEmail(ticketEntity, orderTicketDto.email()),
+                ticketEntities -> mailService.sendTicketViaEmail(ticketEntities, orderTicketDto.email()),
                 Optional.empty()
         );
     }
 
-    private Optional<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, Consumer<TicketEntity> mailSendingConsumer, Optional<String> userId) {
+    private List<TicketEntity> orderTicketForEvent(OrderTicketDto orderTicketDto, Consumer<List<TicketEntity>> mailSendingConsumer, Optional<String> userId) {
         val eventOpt = eventRepository.findById(orderTicketDto.eventId());
-        return eventOpt.flatMap(event -> {
-            long maxTicketCount = event.getMaxTicketCount();
-            long ticketCount = ticketRepository.countByEventId(event.getId());
-            if (ticketCount >= maxTicketCount) return Optional.empty();
-            if(event.getIsBuyingTicketsTurnedOff()) return Optional.empty();
+        if(eventOpt.isEmpty()) return List.of();
 
-            if(ticketRepository.existsByEventIdAndSeat(event.getId(), orderTicketDto.seat())){
-                // seat is already occupied
-                return Optional.empty();
-            }
+        val event = eventOpt.get();
 
-            val createdTicket = ticketRepository.save(createTicketEntity(orderTicketDto, event, userId));
-            mailSendingConsumer.accept(createdTicket);
-            return Optional.of(createdTicket);
-        });
+        long maxTicketCount = event.getMaxTicketCount();
+        long ticketCount = ticketRepository.countByEventId(event.getId());
+        if (ticketCount + orderTicketDto.ticketsCount() > maxTicketCount) return List.of();
+        if (event.getIsBuyingTicketsTurnedOff()) return List.of();
+
+        val tickets = ticketRepository.saveAll(
+                Stream.generate(() -> createTicketEntity(event, userId)).limit(orderTicketDto.ticketsCount()).toList()
+        );
+
+        mailSendingConsumer.accept(tickets);
+        return tickets;
     }
 
-    private TicketEntity createTicketEntity(OrderTicketDto orderTicketDto, EventEntity eventEntity, Optional<String> userId) {
+    private TicketEntity createTicketEntity(EventEntity eventEntity, Optional<String> userId) {
         return new TicketEntity(
                 null,
                 UUID.randomUUID(),
                 eventEntity.getTicketPrice(),
-                orderTicketDto.seat(),
                 eventEntity,
                 userId.orElse(null)
         );
