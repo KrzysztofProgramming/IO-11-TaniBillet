@@ -6,8 +6,7 @@ import {
   TABLE_ACTION_KEY,
   TableAction,
 } from '../../shared/components/data-grid/data-grid.component';
-import { GetTicketDto } from '@api/index';
-import { Configuration, TicketControllerService } from '../../apiv2';
+import { Configuration, GetTicketDto, TicketControllerService } from '../../apiv2';
 import { AuthService } from '../../shared/services/security/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -50,7 +49,6 @@ export class TicketsComponent {
 
   displayedColumns: TableColumnNames<GetTicketDto> = [
     'id',
-    'seat',
     'boughtPrice',
     'eventId',
     'qrCodeId',
@@ -58,7 +56,6 @@ export class TicketsComponent {
 
   columnHeaders: ChangedTableColumnNames<GetTicketDto> = {
     id: 'ID',
-    seat: 'Miejsce',
     boughtPrice: 'Cena',
     eventId: 'ID wydarzenia',
     qrCodeId: 'Kod QR',

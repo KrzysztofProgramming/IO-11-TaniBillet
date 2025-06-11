@@ -9,9 +9,8 @@ import {
   TableColumnSettings,
 } from '../../shared/components/data-grid/data-grid.component';
 import { HttpClient } from '@angular/common/http';
-import { Configuration } from '@api/configuration';
 import { AuthService } from '../../shared/services/security/auth.service';
-import { EventControllerService, EventDto } from '../../apiv2';
+import { Configuration, EventControllerService, EventDto } from '../../apiv2';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ModalEditEventComponent } from './modal-edit-event/modal-edit-event.component';
 import { SnackBarService } from '../../shared/services/snackbar.service';
