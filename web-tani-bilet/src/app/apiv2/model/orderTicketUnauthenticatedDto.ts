@@ -11,7 +11,7 @@
  */
 
 export interface OrderTicketUnauthenticatedDto { 
-    seat: number;
     eventId: number;
     email: string;
+    ticketsCount: number;
 }

@@ -22,6 +22,7 @@ export interface EventDto {
     maxTicketsCount: number;
     ticketsSoldCount: number;
     eventType: EventDto.EventTypeEnum;
+    ticketPrice: number;
 }
 export namespace EventDto {
     export type EventTypeEnum = 'CONCERT' | 'CONFERENCE' | 'WORKSHOP' | 'MEETUP' | 'FESTIVAL';

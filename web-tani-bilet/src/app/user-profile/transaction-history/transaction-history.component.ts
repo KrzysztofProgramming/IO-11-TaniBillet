@@ -44,6 +44,7 @@ export class TransactionHistoryComponent {
   data$ = this.ticketService.getTicketsForUser().pipe(
     map((res) => {
       const now = new Date();
+      console.log(res[0], now)
       return (res ?? []).filter(
         (ticket) => new Date(ticket.eventEndTime) < now
       );
@@ -51,7 +52,6 @@ export class TransactionHistoryComponent {
   );
   displayedColumns: TableColumnNames<GetTicketDto> = [
     'id',
-    'seat',
     'boughtPrice',
     'eventId',
     'qrCodeId',
@@ -59,7 +59,6 @@ export class TransactionHistoryComponent {
 
   columnHeaders: ChangedTableColumnNames<GetTicketDto> = {
     id: 'ID',
-    seat: 'Miejsce',
     boughtPrice: 'Cena',
     eventId: 'ID wydarzenia',
     qrCodeId: 'Kod QR',

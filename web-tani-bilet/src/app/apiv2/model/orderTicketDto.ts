@@ -11,6 +11,6 @@
  */
 
 export interface OrderTicketDto { 
-    seat: number;
     eventId: number;
+    ticketsCount: number;
 }
