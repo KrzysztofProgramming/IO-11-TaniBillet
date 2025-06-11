@@ -2,9 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActionButtonsModal, ModalViewComponent } from '../../shared/components/modal-view/modal-view.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Configuration, EventDto, GetTicketDto, OrderTicketDto } from '@api/index';
 import { AuthService } from '../../shared/services/security/auth.service';
-import { OrderTicketUnauthenticatedDto, TicketControllerService } from '../../apiv2';
+import { Configuration, EventDto, GetTicketDto, OrderTicketDto, OrderTicketUnauthenticatedDto, TicketControllerService } from '../../apiv2';
 import { SnackBarService } from '../../shared/services/snackbar.service';
 import { error } from 'console';
 import { Observable } from 'rxjs';
@@ -63,14 +62,14 @@ export class TicketPurchaseModalComponent implements OnInit {
   }
 
   private buyTicket(){
-    let observable$: Observable<GetTicketDto>;
+    let observable$: Observable<GetTicketDto[]>;
 
     if(this.isLoggedIn){
-      const body: OrderTicketDto = { seat: this.formGroup.get('ticketNumber')?.value, eventId: this.eventDto?.id!}
+      const body: OrderTicketDto = { ticketsCount: this.formGroup.get('ticketNumber')?.value, eventId: this.eventDto?.id!}
       observable$ = this._ticketService.orderTicket(body);
     }else{
       const body: OrderTicketUnauthenticatedDto = { 
-        seat: this.formGroup.get('ticketNumber')?.value, 
+        ticketsCount: this.formGroup.get('ticketNumber')?.value, 
         email: this.formGroup.get('email')?.value,
         eventId: this.eventDto?.id!
       }
