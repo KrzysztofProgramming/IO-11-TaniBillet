@@ -1,14 +1,14 @@
-import { Component, Input, input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DataGridComponent, TableAction, TABLE_ACTION_KEY, TableColumnSettings, ColumnTypeEnum } from '../../shared/components/data-grid/data-grid.component';
 import { ListViewComponent } from '../../shared/components/list-view/list-view.component';
 import { TableColumnNames, ChangedTableColumnNames } from '../../shared/models/tableColumn.type';
-import {debounceTime, distinctUntilChanged, filter, map, Observable, of} from 'rxjs';
+import {map, Observable, of} from 'rxjs';
 import { AuthService } from '../../shared/services/security/auth.service';
 import { TicketPurchaseOptionsModalComponent } from '../../tickets/ticket-purchase-options-modal/ticket-purchase-options-modal.component';
 import { TicketPurchaseModalComponent } from '../../tickets/ticket-purchase-modal/ticket-purchase-modal.component';
 import {EventControllerService, EventDto} from '../../apiv2';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { LoadingService } from '../../shared/services/loading/loading.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 @Component({

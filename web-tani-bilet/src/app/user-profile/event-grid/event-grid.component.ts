@@ -1,6 +1,6 @@
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
-import {finalize, map, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {
   ColumnTypeEnum,
   DataGridComponent,
