@@ -1,4 +1,4 @@
-<div class="active-tickets">
+<div class="active-tickets"  *ngIf="!this.isReloading" >
   <!-- <h2>Moje wydarzenia</h2> -->
   <app-list-view [title]="'Moje wydarzenia'">
     <app-data-grid
@@ -10,5 +10,5 @@
     >
     </app-data-grid>
   </app-list-view>
-  
+
 </div>

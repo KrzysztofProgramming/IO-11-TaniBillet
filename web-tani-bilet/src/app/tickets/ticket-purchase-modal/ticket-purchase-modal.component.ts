@@ -39,6 +39,7 @@ export class TicketPurchaseModalComponent implements OnInit {
   formGroup: FormGroup;
   eventDto: EventDto | undefined;
   isLoggedIn = false;
+  waitingForResult = false;
 
   constructor(
     private dialogRef: MatDialogRef<TicketPurchaseModalComponent>,
@@ -68,22 +69,25 @@ export class TicketPurchaseModalComponent implements OnInit {
       const body: OrderTicketDto = { ticketsCount: this.formGroup.get('ticketNumber')?.value, eventId: this.eventDto?.id!}
       observable$ = this._ticketService.orderTicket(body);
     }else{
-      const body: OrderTicketUnauthenticatedDto = { 
-        ticketsCount: this.formGroup.get('ticketNumber')?.value, 
+      const body: OrderTicketUnauthenticatedDto = {
+        ticketsCount: this.formGroup.get('ticketNumber')?.value,
         email: this.formGroup.get('email')?.value,
         eventId: this.eventDto?.id!
       }
 
       observable$ = this._ticketService.orderTicket1(body);
     }
+    this.waitingForResult = true
     // console
     observable$.subscribe({
         next: _ => {
+          this.waitingForResult = false;
           this._msgSnackbarService.showSuccessSnackBar("Pomyślnie zakupiono bilet na " + this.eventDto?.name);
           this.dialogRef.close(true);
         },
         error: err => {
           console.log(err)
+          this.waitingForResult = false;
           this._msgSnackbarService.showErrorSnackBar(JSON.stringify(err?.error?.errors) || "Wystąpił błąd")
         }
       })
@@ -95,7 +99,7 @@ export class TicketPurchaseModalComponent implements OnInit {
       primary: true,
       title: 'Kup',
       actionFn: () => this.buyTicket(),
-      disabledFn: () => this.formGroup.invalid
+      disabledFn: () => this.formGroup.invalid || this.waitingForResult
     },
     {
       primary: false,

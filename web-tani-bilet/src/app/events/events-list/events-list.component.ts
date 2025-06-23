@@ -42,7 +42,9 @@ export class EventsListComponent implements OnInit{
     private _authService: AuthService) { }
 
   ngOnInit(): void {
-    this.data$ = this._eventService.getEvents();
+    this.data$ = this._eventService.getEvents().pipe(
+      map(events => events.filter(event => !event.isBuyingTicketsTurnedOff && event.maxTicketsCount > event.ticketsSoldCount))
+    );
     const pendingAction = localStorage.getItem('pendingAction');
 
     if (pendingAction === 'buy-ticket') {

@@ -1,6 +1,6 @@
 import { CommonModule, formatDate } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
+import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
+import {finalize, map, Observable, of} from 'rxjs';
 import {
   ColumnTypeEnum,
   DataGridComponent,
@@ -45,6 +45,8 @@ export class EventGridComponent implements OnInit {
   private eventService = inject(EventControllerService);
   private matDialog = inject(MatDialog);
   private snackBarService = inject(SnackBarService);
+  private cd = inject(ChangeDetectorRef);
+  public isReloading: boolean = false;
   displayedColumns: TableColumnNames<EventDto> = [
     'id',
     'name',
@@ -114,18 +116,23 @@ export class EventGridComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadEvents();
+        this.isReloading = true
+        this.reloadTable()
       }
     });
   }
 
-  private loadEvents() {
-    return this.eventService.getEvents();
+  private reloadTable(): void {
+    this.cd.markForCheck();
+    this.loadEvents().subscribe((events: EventDto[]) => {
+      this.isReloading = false;
+      this.data$ = of(events);
+      this.cd.markForCheck()
+    })
   }
 
-  editEvent(event: EventDto | undefined): void {
-    if (!event) return;
-    console.log('Edytuj wydarzenie:', event);
+  private loadEvents() {
+    return this.eventService.getEvents();
   }
 
   deleteEvent(id: number): void {
@@ -134,7 +141,7 @@ export class EventGridComponent implements OnInit {
     this.eventService.deleteEvent(id).subscribe({
       next: () => {
         console.log('Wydarzenie usunięte');
-        this.loadEvents();
+        this.reloadTable()
         this.snackBarService.showSuccessSnackBar('Wydarzenie usunięte');
       },
       error: (err) => {
